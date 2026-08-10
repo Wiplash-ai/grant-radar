@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Grant Radar",
+  "version": "0.1.0",
+  "description": "Search official-source U.S. government grant opportunities from any page.",
+  "permissions": ["storage", "contextMenus"],
+  "host_permissions": ["https://api.grants.wiplash.ai/*", "http://localhost:8791/*"],
+  "optional_host_permissions": ["https://*/*"],
+  "background": { "service_worker": "background.js" },
+  "action": { "default_title": "Search government grants", "default_popup": "popup.html" },
+  "options_page": "options.html"
+}
