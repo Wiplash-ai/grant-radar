@@ -13,6 +13,7 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 import { searchGrants } from "./api";
+import { SiteFooter, SiteHeader } from "./SiteChrome";
 import type { Grant, GrantResponse } from "./types";
 
 const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", notation: "compact", maximumFractionDigits: 1 });
@@ -20,7 +21,8 @@ const formatMoney = (value?: number) => value ? money.format(value) : "Not state
 const formatDate = (value?: string) => value ? new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(value)) : "Rolling / TBD";
 const titleCase = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
 
-function GrantCard({ grant, index }: { grant: Grant; index: number }) {
+function GrantCard({ grant, index, onSelect }: { grant: Grant; index: number; onSelect: (id: string) => void }) {
+  const id = grant.key.replace(/^opportunity:/, "");
   return (
     <article className="grant-card" style={{ "--delay": `${Math.min(index, 8) * 45}ms` } as React.CSSProperties}>
       <div className="card-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</div>
@@ -40,13 +42,13 @@ function GrantCard({ grant, index }: { grant: Grant; index: number }) {
           <div><dt><CircleDollarSign size={14} /> Award ceiling</dt><dd>{grant.awardCeilingLabel || formatMoney(grant.awardCeilingUsd)}</dd></div>
           <div><dt><Compass size={14} /> Match signal</dt><dd>{grant.fitScore}/100</dd></div>
         </dl>
-        <a href={grant.officialUrl} target="_blank" rel="noreferrer">Read official notice <ArrowUpRight size={16} /></a>
+        <a href={`/opportunity/${id}`} onClick={(event) => { event.preventDefault(); onSelect(id); }}>View opportunity briefing <ArrowUpRight size={16} /></a>
       </aside>
     </article>
   );
 }
 
-export default function App() {
+export default function App({ onSelectOpportunity }: { onSelectOpportunity: (id: string) => void }) {
   const [query, setQuery] = useState("");
   const [submittedQuery, setSubmittedQuery] = useState("");
   const [status, setStatus] = useState("");
@@ -79,22 +81,7 @@ export default function App() {
 
   return (
     <div className="page-shell">
-      <div className="utility-bar">
-        <span>Wiplash Labs / Public Funding Intelligence</span>
-        <span className="catalog-status"><i /> Official-source catalog online</span>
-      </div>
-      <header className="site-header">
-        <a className="brand" href="/">
-          <img src="/radar-mark.svg" alt="" />
-          <span><strong>Grant Radar</strong><small>Federal Opportunity Desk</small></span>
-        </a>
-        <nav aria-label="Primary navigation">
-          <a href="#mission">Mission</a>
-          <a href="#search">Find funding</a>
-          <a href="https://github.com/Wiplash-ai/grant-radar">Get the extension</a>
-        </nav>
-        <a className="header-cta" href="#search">Search the registry <ArrowDown size={14} /></a>
-      </header>
+      <SiteHeader />
 
       <main>
         <section id="mission" className="hero">
@@ -111,12 +98,12 @@ export default function App() {
             </div>
           </div>
           <figure className="hero-visual">
-            <img src="/usace-field-planning.jpg" alt="U.S. Army Corps of Engineers staff reviewing field survey plans beside a creek." />
+            <img src="/grant-radar-field-team-v2.webp" alt="Civil engineers reviewing infrastructure plans at a reservoir field site." />
             <div className="image-grid" aria-hidden="true" />
             <figcaption>
               <span>Field report / Public infrastructure</span>
               <strong>Funding becomes work in the field.</strong>
-              <small>U.S. Army Corps of Engineers · Omaha District</small>
+              <small>Original Wiplash Labs visual concept</small>
             </figcaption>
           </figure>
         </section>
@@ -159,16 +146,12 @@ export default function App() {
           {error ? <div className="state error"><strong>The registry is unavailable.</strong><span>{error}</span><button onClick={() => setSubmittedQuery((value) => value)}>Try again</button></div> : null}
           {loading ? <div className="state"><span className="pulse"/>Scanning official sources…</div> : null}
           {!loading && !error && result?.data.length === 0 ? <div className="state"><strong>No opportunity matched.</strong><span>Try a broader program, technology, population, or agency term.</span></div> : null}
-          {!loading && !error ? <div className="results-list">{result?.data.map((grant, index) => <GrantCard key={grant.key} grant={grant} index={index}/>)}</div> : null}
+          {!loading && !error ? <div className="results-list">{result?.data.map((grant, index) => <GrantCard key={grant.key} grant={grant} index={index} onSelect={onSelectOpportunity}/>)}</div> : null}
           {result && result.pagination.pages > 1 ? <div className="pagination"><button disabled={page <= 1} onClick={() => { setPage((value) => value - 1); document.querySelector("#results")?.scrollIntoView({ behavior: "smooth" }); }}><ChevronLeft size={16}/>Previous briefing</button><span>Page {page} / {result.pagination.pages}</span><button disabled={page >= result.pagination.pages} onClick={() => { setPage((value) => value + 1); document.querySelector("#results")?.scrollIntoView({ behavior: "smooth" }); }}>Next briefing<ChevronRight size={16}/></button></div> : null}
         </section>
       </main>
 
-      <footer>
-        <div className="footer-brand"><img src="/radar-mark.svg" alt=""/><span><strong>Grant Radar</strong><small>A Wiplash Labs field tool</small></span></div>
-        <p>Discovery support—not legal, eligibility, or application advice. <a href="https://www.dvidshub.net/image/8521138/levee-inspection-team-papillion-creek-nebraska-june-28-2024" target="_blank" rel="noreferrer">Hero image: USACE Omaha District.</a></p>
-        <a href="https://wiplash.ai">Wiplash.ai <ArrowUpRight size={14}/></a>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }
