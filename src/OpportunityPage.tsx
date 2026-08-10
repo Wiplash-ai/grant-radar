@@ -8,7 +8,6 @@ import {
   CheckCircle2,
   ChevronDown,
   CircleDollarSign,
-  Database,
   FileText,
   Landmark,
   Mail,
@@ -146,14 +145,6 @@ export default function OpportunityPage({ id, onBack }: { id: string; onBack: ()
                   : <div className="raw-description-scroll">{description}</div>}
               </article>
 
-              <article className="briefing-card eligibility-card">
-                <div className="briefing-card-label"><span>02</span><Users size={17}/> Eligibility</div>
-                <h3>Who can apply</h3>
-                {applicantHighlights.length ? <ul className="eligibility-list applicant-highlights">{applicantHighlights.map((applicant) => <li key={applicant}><CheckCircle2 size={17}/><span>{applicant}</span></li>)}</ul> : <p className="detail-muted">The source does not provide a structured applicant list.</p>}
-                {details?.eligibleApplicants?.length ? <div className="official-applicant-code"><span>Official Grants.gov classification</span><strong>{details.eligibleApplicants.join(" · ")}</strong></div> : null}
-                {details?.eligibilityAdditionalInformation ? <details className="secondary-disclosure"><summary>Read every eligibility term <ChevronDown size={15}/></summary><div>{details.eligibilityAdditionalInformation}</div></details> : null}
-              </article>
-
               {documents.length ? <article className="briefing-card resources-card">
                 <div className="briefing-card-label"><span>05</span><FileText size={17}/> Source materials</div>
                 <h3>Documents and program links</h3>
@@ -164,6 +155,14 @@ export default function OpportunityPage({ id, onBack }: { id: string; onBack: ()
             </div>
 
             <aside className="briefing-rail briefing-rail-left" aria-label="Opportunity classification">
+              <article className="briefing-card eligibility-card">
+                <div className="briefing-card-label"><span>02</span><Users size={17}/> Eligibility</div>
+                <h3>Who can apply</h3>
+                {applicantHighlights.length ? <ul className="eligibility-list applicant-highlights">{applicantHighlights.map((applicant) => <li key={applicant}><CheckCircle2 size={17}/><span>{applicant}</span></li>)}</ul> : <p className="detail-muted">The source does not provide a structured applicant list.</p>}
+                {details?.eligibleApplicants?.length ? <div className="official-applicant-code"><span>Official Grants.gov classification</span><strong>{details.eligibleApplicants.join(" · ")}</strong></div> : null}
+                {details?.eligibilityAdditionalInformation ? <details className="secondary-disclosure"><summary>Read every eligibility term <ChevronDown size={15}/></summary><div>{details.eligibilityAdditionalInformation}</div></details> : null}
+              </article>
+
               <article className="briefing-card taxonomy-card">
                 <div className="briefing-card-label"><span>Funding map</span><Building2 size={17}/></div>
                 <h3>Programs and activity</h3>
@@ -180,10 +179,6 @@ export default function OpportunityPage({ id, onBack }: { id: string; onBack: ()
                 <p>{details?.applicationInstructions || "Use the official opportunity record to review the application package and submission instructions."}</p>
                 <a className="briefing-action" href={officialDestination} target="_blank" rel="noreferrer">Continue to Grants.gov <ArrowUpRight size={15}/></a>
                 <div className="source-assurance"><ShieldCheck size={17}/><p><strong>Source checked {formatDate(details?.fetchedAt || grant.lastVerifiedAt)}</strong>The government notice controls final eligibility, amendments, deadlines, and submission rules.</p></div>
-                <details className="raw-data-disclosure">
-                  <summary><Database size={15}/> View raw API record <ChevronDown size={14}/></summary>
-                  <pre>{JSON.stringify(grant, null, 2)}</pre>
-                </details>
               </article>
 
               <article className="briefing-card contact-card">
@@ -191,8 +186,8 @@ export default function OpportunityPage({ id, onBack }: { id: string; onBack: ()
                 <h3>Questions about the notice</h3>
                 {contactNarrative ? <p>{contactNarrative}</p> : null}
                 {contactPhones.length ? <div className="contact-phone-list">{contactPhones.map((phone) => <div className="contact-phone" key={phone.telUrl}>
-                  <Phone size={17}/><div><span>Phone</span><strong>{phone.display}</strong></div>
-                  <div className="contact-phone-actions"><a href={phone.telUrl}><Phone size={13}/>Call</a>{phone.whatsappUrl ? <a href={phone.whatsappUrl} target="_blank" rel="noreferrer"><MessageCircle size={13}/>WhatsApp</a> : null}</div>
+                  <Phone size={17}/><div className="contact-phone-main"><span>Phone</span><a className="contact-number-link" href={phone.telUrl} aria-label={`Call ${phone.display}`}>{phone.display}</a></div>
+                  {phone.whatsappUrl ? <div className="contact-phone-actions"><a href={phone.whatsappUrl} target="_blank" rel="noreferrer"><MessageCircle size={13}/>WhatsApp</a></div> : null}
                 </div>)}</div> : null}
                 {details?.grantorContactEmail ? <a className="briefing-action secondary" href={`mailto:${details.grantorContactEmail}`}><Mail size={15}/>{details.grantorContactEmail}</a> : null}
                 {!contactNarrative && !contactPhones.length && !details?.grantorContactEmail ? <p className="detail-muted">No grantor contact was included in the source record.</p> : null}

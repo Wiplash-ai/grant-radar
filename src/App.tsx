@@ -48,11 +48,12 @@ const initialFilters: Filters = {
   minAward: "",
   deadlineDays: "",
   hasFundingAmount: false,
-  sort: "relevance-desc"
+  sort: "posted-date-desc"
 };
 
 function filtersFromUrl(): Filters {
   const params = new URLSearchParams(window.location.search);
+  const query = params.get("q") || "";
   return {
     status: params.get("status") || "",
     agency: params.get("agency") || "",
@@ -62,7 +63,7 @@ function filtersFromUrl(): Filters {
     minAward: params.get("min_award") || "",
     deadlineDays: params.get("deadline_days") || "",
     hasFundingAmount: params.get("has_funding_amount") === "true",
-    sort: params.get("sort") || "relevance-desc"
+    sort: params.get("sort") || (query ? "relevance-desc" : "posted-date-desc")
   };
 }
 
@@ -77,7 +78,8 @@ function registryUrl(query: string, filters: Filters, includeResults = true) {
   if (filters.minAward) params.set("min_award", filters.minAward);
   if (filters.deadlineDays) params.set("deadline_days", filters.deadlineDays);
   if (filters.hasFundingAmount) params.set("has_funding_amount", "true");
-  if (filters.sort !== "relevance-desc") params.set("sort", filters.sort);
+  const defaultSort = query.trim() ? "relevance-desc" : "posted-date-desc";
+  if (filters.sort !== defaultSort) params.set("sort", filters.sort);
   return `/search${params.size ? `?${params}` : ""}${includeResults ? "#results" : ""}`;
 }
 
@@ -253,8 +255,8 @@ export default function App({ onSelectOpportunity, page: view = "home" }: { onSe
     event.preventDefault();
     setPage(1);
     setSubmittedQuery(query);
-    const nextFilters = query.trim() ? { ...filters, sort: "relevance-desc" } : filters;
-    if (query.trim()) setFilters(nextFilters);
+    const nextFilters = { ...filters, sort: query.trim() ? "relevance-desc" : "posted-date-desc" };
+    setFilters(nextFilters);
     if (isSearchPage) window.history.replaceState({}, "", registryUrl(query, nextFilters));
   }
 
