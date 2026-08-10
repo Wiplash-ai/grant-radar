@@ -28,9 +28,23 @@ export function DeveloperPage() {
   useEffect(() => developerSeo(), []);
   return <div className="page-shell docs-page"><SiteHeader />
     <main>
-      <section className="static-hero docs-hero">
-        <div><span className="static-eyebrow"><Braces size={15}/> Grant Grinder API / v1</span><h1>Federal grant data,<br/><em>ready to build with.</em></h1><p>Search every current posted and forecasted Grants.gov opportunity through one normalized, source-attributed API. Use it for research agents, funding alerts, directories, CRMs, and eligibility workflows.</p><div className="hero-actions"><a className="primary-action signal" href="#quickstart">Make your first request</a><a className="text-action light" href={`${API_BASE}/openapi.json`}>OpenAPI specification <ArrowUpRight size={15}/></a></div></div>
-        <aside className="docs-status"><ShieldCheck size={24}/><span>Catalog coverage</span><strong>All current federal opportunities</strong><p>Daily enhanced Grants.gov extract with same-day detail fallback.</p></aside>
+      <section className="static-hero-shell">
+        <div className="static-hero docs-hero">
+          <div className="static-hero-copy">
+            <span className="static-eyebrow"><Braces size={16}/> Grant Grinder API / v1</span>
+            <h1>Federal grant data,<br/><em>ready to build with.</em></h1>
+            <p>Build research agents, funding alerts, directories, CRMs, and eligibility workflows on one normalized, source-attributed interface.</p>
+            <div className="hero-actions"><a className="primary-action signal" href="#quickstart">Make your first request</a><a className="text-action light" href={`${API_BASE}/openapi.json`}>OpenAPI specification <ArrowUpRight size={15}/></a></div>
+            <div className="static-proof-row"><span><b>All current</b> posted + forecasted</span><span><b>Official links</b> on every record</span><span><b>Daily</b> source refresh</span></div>
+          </div>
+          <aside className="static-visual-panel docs-visual" aria-label="Grant Grinder API interface status">
+            <div className="visual-panel-head"><span>Interface status</span><i/> Live</div>
+            <div className="visual-sigil"><Braces size={42}/></div>
+            <span className="visual-kicker">Primary route</span>
+            <strong className="visual-route">GET /v1/grants</strong>
+            <div className="visual-readouts"><span><b>JSON</b>Normalized records</span><span><b>FACETS</b>Decision-ready filters</span><span><b>SOURCE</b>Grants.gov attributed</span></div>
+          </aside>
+        </div>
       </section>
 
       <div className="docs-layout">
@@ -85,7 +99,23 @@ export function PrivacyPage() {
   useEffect(() => privacySeo(), []);
   return <div className="page-shell policy-page"><SiteHeader />
     <main>
-      <section className="static-hero policy-hero"><div><span className="static-eyebrow"><ShieldCheck size={15}/> Privacy policy / Effective August 10, 2026</span><h1>Plain-language privacy,<br/><em>with a narrow data footprint.</em></h1><p>This policy covers the Grant Grinder website, browser extension, and commercial API operated by Wiplash.ai through Wiplash Labs.</p></div><aside className="docs-status"><LockKeyhole size={24}/><span>Our baseline</span><strong>No ads. No data sale.</strong><p>We use data to operate searches, secure API access, and support customers.</p></aside></section>
+      <section className="static-hero-shell">
+        <div className="static-hero policy-hero">
+          <div className="static-hero-copy">
+            <span className="static-eyebrow"><ShieldCheck size={16}/> Privacy policy / Effective August 10, 2026</span>
+            <h1>Plain-language privacy,<br/><em>with a narrow footprint.</em></h1>
+            <p>This policy covers the Grant Grinder website, browser extension, and commercial API operated by Wiplash.ai through Wiplash Labs.</p>
+            <div className="static-proof-row"><span><b>No ads</b> or ad profiles</span><span><b>No sale</b> of personal data</span><span><b>No account</b> needed to search</span></div>
+          </div>
+          <aside className="static-visual-panel policy-visual" aria-label="Grant Grinder privacy baseline">
+            <div className="visual-panel-head"><span>Data posture</span><i/> Minimal</div>
+            <div className="visual-sigil"><LockKeyhole size={40}/></div>
+            <span className="visual-kicker">Processing map</span>
+            <strong className="visual-route">Purpose in. Result out.</strong>
+            <div className="privacy-flow"><span><b>Search phrase</b><i/>Grant results</span><span><b>API key</b><i/>Authorized access</span><span><b>Support email</b><i/>Human reply</span></div>
+          </aside>
+        </div>
+      </section>
 
       <article className="policy-content">
         <section><span>01</span><div><h2>What this policy covers</h2><p>Grant Grinder helps people and software agents find U.S. government funding opportunities. This policy explains what information the website, extension, and API process, why we process it, and the choices available to you. Grant Grinder is not a government service.</p></div></section>

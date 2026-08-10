@@ -1,9 +1,12 @@
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useId, useMemo, useRef, useState } from "react";
+import type { ReactNode } from "react";
 import {
   ArrowDown,
   ArrowUpRight,
   Building2,
   CalendarClock,
+  Check,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   CircleDollarSign,
@@ -80,10 +83,107 @@ function GrantCard({ grant, index, onSelect }: { grant: Grant; index: number; on
   );
 }
 
-function Options({ items, selected }: { items: GrantFacetItem[] | undefined; selected: string }) {
-  const values = items || [];
-  const hasSelected = values.some((item) => item.value === selected);
-  return <>{selected && !hasSelected ? <option value={selected}>{selected}</option> : null}{values.map((item) => <option key={item.value} value={item.value}>{item.value} ({item.count})</option>)}</>;
+type DropdownOption = { value: string; label: string };
+
+function facetOptions(defaultLabel: string, items: GrantFacetItem[] | undefined, selected: string): DropdownOption[] {
+  const options = (items || []).map((item) => ({ value: item.value, label: `${item.value} (${item.count})` }));
+  if (selected && !options.some((option) => option.value === selected)) options.unshift({ value: selected, label: selected });
+  return [{ value: "", label: defaultLabel }, ...options];
+}
+
+function CustomDropdown({ label, value, options, icon, onChange }: {
+  label: string;
+  value: string;
+  options: DropdownOption[];
+  icon?: ReactNode;
+  onChange: (value: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const pendingFocusRef = useRef<number | null>(null);
+  const menuId = useId();
+  const selected = options.find((option) => option.value === value) || options[0];
+
+  useEffect(() => {
+    function closeOnOutsidePointer(event: MouseEvent) {
+      if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", closeOnOutsidePointer);
+    return () => document.removeEventListener("mousedown", closeOnOutsidePointer);
+  }, []);
+
+  useEffect(() => {
+    if (!open || pendingFocusRef.current === null) return;
+    focusOption(pendingFocusRef.current);
+    pendingFocusRef.current = null;
+  }, [open]);
+
+  function focusOption(index: number) {
+    const optionButtons = rootRef.current?.querySelectorAll<HTMLButtonElement>("[role='option']");
+    if (!optionButtons?.length) return;
+    optionButtons[Math.max(0, Math.min(index, optionButtons.length - 1))]?.focus();
+  }
+
+  function openWithKeyboard(direction: 1 | -1) {
+    const selectedIndex = Math.max(0, options.findIndex((option) => option.value === value));
+    pendingFocusRef.current = direction === 1 ? selectedIndex : options.length - 1;
+    setOpen(true);
+  }
+
+  function handleOptionKey(event: React.KeyboardEvent<HTMLButtonElement>, index: number) {
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      focusOption(index + (event.key === "ArrowDown" ? 1 : -1));
+    }
+    if (event.key === "Home" || event.key === "End") {
+      event.preventDefault();
+      focusOption(event.key === "Home" ? 0 : options.length - 1);
+    }
+    if (event.key === "Escape") {
+      event.preventDefault();
+      setOpen(false);
+      triggerRef.current?.focus();
+    }
+  }
+
+  return <div className={`field-select${open ? " open" : ""}`} ref={rootRef}>
+    <span className="field-select-label">{icon}{label}</span>
+    <button
+      ref={triggerRef}
+      className="field-select-trigger"
+      type="button"
+      aria-haspopup="listbox"
+      aria-label={`${label}: ${selected?.label}`}
+      aria-expanded={open}
+      aria-controls={menuId}
+      onClick={() => setOpen((current) => !current)}
+      onKeyDown={(event) => {
+        if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+          event.preventDefault();
+          openWithKeyboard(event.key === "ArrowDown" ? 1 : -1);
+        }
+        if (event.key === "Escape") setOpen(false);
+      }}
+    >
+      <span>{selected?.label}</span><ChevronDown size={16}/>
+    </button>
+    {open ? <div className="field-select-menu" id={menuId} role="listbox" aria-label={label}>
+      {options.map((option, index) => <button
+        type="button"
+        role="option"
+        aria-selected={option.value === value}
+        className="field-select-option"
+        key={`${option.value}-${option.label}`}
+        onKeyDown={(event) => handleOptionKey(event, index)}
+        onClick={() => {
+          onChange(option.value);
+          setOpen(false);
+          triggerRef.current?.focus();
+        }}
+      ><span>{option.label}</span>{option.value === value ? <Check size={15}/> : null}</button>)}
+    </div> : null}
+  </div>;
 }
 
 export default function App({ onSelectOpportunity }: { onSelectOpportunity: (id: string) => void }) {
@@ -163,17 +263,16 @@ export default function App({ onSelectOpportunity }: { onSelectOpportunity: (id:
         </section>
 
         <section className="service-strip" aria-label="Grant catalog summary">
-          <div><span>01</span><strong>{total || "—"}</strong><small>Current opportunities</small></div>
-          <div><span>02</span><strong>{agencies || "—"}</strong><small>Federal agencies</small></div>
-          <div><span>03</span><strong>All fields</strong><small>Eligibility through contacts</small></div>
-          <div><span>04</span><strong>{result?.meta.last_refresh_at ? formatDate(result.meta.last_refresh_at) : "Daily"}</strong><small>Catalog refresh</small></div>
+          <div><span>01</span><strong>{total || "—"}</strong><small>Funding opportunities</small></div>
+          <div><span>02</span><strong>{agencies || "—"}</strong><small>Grantmaking agencies</small></div>
+          <div><span>03</span><strong>Decision ready</strong><small>Eligibility, amounts &amp; contacts</small></div>
+          <div><span>04</span><strong>{result?.meta.last_refresh_at ? formatDate(result.meta.last_refresh_at) : "Daily"}</strong><small>Last official-source sync</small></div>
         </section>
 
         <section id="search" className="search-command" aria-label="Grant search">
           <div className="command-heading">
             <span className="section-number">01</span>
             <div><span>Funding desk</span><h2>What do you need to fund?</h2></div>
-            <p>Search the full current federal catalog by the people you serve, the work you do, your organization type, or a specific agency.</p>
           </div>
           <form onSubmit={submit}>
             <label className="search-box">
@@ -188,14 +287,14 @@ export default function App({ onSelectOpportunity }: { onSelectOpportunity: (id:
                 <button type="button" onClick={clearFilters}><RotateCcw size={13}/> Clear all</button>
               </div>
               <div className="filter-grid">
-                <label>Status<select value={filters.status} onChange={(event) => updateFilter("status", event.target.value)}><option value="">Open + forecasted</option><option value="open">Open now</option><option value="forecasted">Forecasted</option></select></label>
-                <label>Funding purpose<select value={filters.fundingCategory} onChange={(event) => updateFilter("fundingCategory", event.target.value)}><option value="">Every category</option><Options items={result?.meta.facets?.fundingCategories} selected={filters.fundingCategory}/></select></label>
-                <label><UsersRound size={13}/> Who can apply<select value={filters.eligibleApplicant} onChange={(event) => updateFilter("eligibleApplicant", event.target.value)}><option value="">Any applicant type</option><Options items={result?.meta.facets?.eligibleApplicants} selected={filters.eligibleApplicant}/></select></label>
-                <label>Agency<select value={filters.agency} onChange={(event) => updateFilter("agency", event.target.value)}><option value="">Every agency</option><Options items={result?.meta.facets?.agencies} selected={filters.agency}/></select></label>
-                <label>Funding instrument<select value={filters.fundingInstrument} onChange={(event) => updateFilter("fundingInstrument", event.target.value)}><option value="">Any instrument</option><Options items={result?.meta.facets?.fundingInstruments} selected={filters.fundingInstrument}/></select></label>
-                <label>Minimum available<select value={filters.minAward} onChange={(event) => updateFilter("minAward", event.target.value)}><option value="">Any amount</option><option value="10000">$10,000+</option><option value="50000">$50,000+</option><option value="100000">$100,000+</option><option value="500000">$500,000+</option><option value="1000000">$1 million+</option></select></label>
-                <label>Deadline window<select value={filters.deadlineDays} onChange={(event) => updateFilter("deadlineDays", event.target.value)}><option value="">Any deadline</option><option value="30">Next 30 days</option><option value="60">Next 60 days</option><option value="90">Next 90 days</option><option value="180">Next 6 months</option></select></label>
-                <label>Sort results<select value={filters.sort} onChange={(event) => updateFilter("sort", event.target.value)}><option value="relevance-desc">Best match</option><option value="close-date-asc">Deadline soonest</option><option value="posted-date-desc">Newest posted</option><option value="award-max-desc">Largest funding amount</option><option value="fit-desc">Most complete record</option><option value="agency-asc">Agency A–Z</option><option value="title-asc">Title A–Z</option></select></label>
+                <CustomDropdown label="Status" value={filters.status} onChange={(value) => updateFilter("status", value)} options={[{ value: "", label: "Open + forecasted" }, { value: "open", label: "Open now" }, { value: "forecasted", label: "Forecasted" }]}/>
+                <CustomDropdown label="Funding purpose" value={filters.fundingCategory} onChange={(value) => updateFilter("fundingCategory", value)} options={facetOptions("Every category", result?.meta.facets?.fundingCategories, filters.fundingCategory)}/>
+                <CustomDropdown label="Who can apply" icon={<UsersRound size={14}/>} value={filters.eligibleApplicant} onChange={(value) => updateFilter("eligibleApplicant", value)} options={facetOptions("Any applicant type", result?.meta.facets?.eligibleApplicants, filters.eligibleApplicant)}/>
+                <CustomDropdown label="Agency" value={filters.agency} onChange={(value) => updateFilter("agency", value)} options={facetOptions("Every agency", result?.meta.facets?.agencies, filters.agency)}/>
+                <CustomDropdown label="Funding instrument" value={filters.fundingInstrument} onChange={(value) => updateFilter("fundingInstrument", value)} options={facetOptions("Any instrument", result?.meta.facets?.fundingInstruments, filters.fundingInstrument)}/>
+                <CustomDropdown label="Minimum available" value={filters.minAward} onChange={(value) => updateFilter("minAward", value)} options={[{ value: "", label: "Any amount" }, { value: "10000", label: "$10,000+" }, { value: "50000", label: "$50,000+" }, { value: "100000", label: "$100,000+" }, { value: "500000", label: "$500,000+" }, { value: "1000000", label: "$1 million+" }]}/>
+                <CustomDropdown label="Deadline window" value={filters.deadlineDays} onChange={(value) => updateFilter("deadlineDays", value)} options={[{ value: "", label: "Any deadline" }, { value: "30", label: "Next 30 days" }, { value: "60", label: "Next 60 days" }, { value: "90", label: "Next 90 days" }, { value: "180", label: "Next 6 months" }]}/>
+                <CustomDropdown label="Sort results" value={filters.sort} onChange={(value) => updateFilter("sort", value)} options={[{ value: "relevance-desc", label: "Best match" }, { value: "close-date-asc", label: "Deadline soonest" }, { value: "posted-date-desc", label: "Newest posted" }, { value: "award-max-desc", label: "Largest funding amount" }, { value: "fit-desc", label: "Most complete record" }, { value: "agency-asc", label: "Agency A–Z" }, { value: "title-asc", label: "Title A–Z" }]}/>
               </div>
               <label className="funding-only"><input type="checkbox" checked={filters.hasFundingAmount} onChange={(event) => updateFilter("hasFundingAmount", event.target.checked)}/><span>Only show records with a published funding amount</span></label>
             </div>
