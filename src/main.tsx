@@ -27,14 +27,14 @@ function Root() {
   }
 
   function returnToRegistry() {
-    window.history.pushState({}, "", "/#results");
+    window.history.pushState({}, "", "/search#results");
     setOpportunityId("");
-    setPathname("/");
-    document.title = "Grant Grinder — Find federal funding you can act on";
+    setPathname("/search");
     requestAnimationFrame(() => document.querySelector("#results")?.scrollIntoView({ behavior: "smooth" }));
   }
 
   if (opportunityId) return <OpportunityPage id={opportunityId} onBack={returnToRegistry} />;
+  if (/^\/search\/?$/.test(pathname)) return <App page="search" onSelectOpportunity={openOpportunity} />;
   if (/^\/developers\/?$/.test(pathname)) return <DeveloperPage />;
   if (/^\/privacy\/?$/.test(pathname)) return <PrivacyPage />;
   return <App onSelectOpportunity={openOpportunity} />;

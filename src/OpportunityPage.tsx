@@ -84,7 +84,7 @@ export default function OpportunityPage({ id, onBack }: { id: string; onBack: ()
       <SiteHeader />
       <main className="opportunity-page">
         <div className="detail-breadcrumb">
-          <a href="/#results" onClick={(event) => { event.preventDefault(); onBack(); }}><ArrowLeft size={14}/> All opportunities</a>
+          <a href="/search#results" onClick={(event) => { event.preventDefault(); onBack(); }}><ArrowLeft size={14}/> All opportunities</a>
           <span>/</span><span>{grant.opportunityNumber || "Federal opportunity"}</span>
         </div>
 
@@ -119,73 +119,81 @@ export default function OpportunityPage({ id, onBack }: { id: string; onBack: ()
             <p>We reorganized the official notice into a compact decision briefing. Expand the source language only when you need every detail.</p>
           </div>
 
-          <div className="briefing-grid">
-            <article className="briefing-card mission-card">
-              <div className="briefing-card-label"><span>01</span><Target size={17}/> Mission</div>
-              <h3>What this opportunity funds</h3>
-              <p className="mission-summary">{summary}</p>
-              {description !== summary ? <details className="official-disclosure">
-                <summary>Read the full official description <ChevronDown size={16}/></summary>
-                <div className="official-copy-scroll">{description}</div>
-              </details> : null}
-            </article>
+          <div className="briefing-grid briefing-dossier">
+            <div className="briefing-main-column">
+              <article className="briefing-card mission-card">
+                <div className="briefing-card-label"><span>01</span><Target size={17}/> Mission</div>
+                <h3>What this opportunity funds</h3>
+                <p className="mission-summary">{summary}</p>
+                {description !== summary ? <details className="official-disclosure">
+                  <summary>Read the full official description <ChevronDown size={16}/></summary>
+                  <div className="official-copy-scroll">{description}</div>
+                </details> : null}
+              </article>
 
-            <article className="briefing-card decision-card">
-              <div className="briefing-card-label"><span>At a glance</span><Landmark size={17}/></div>
-              <h3>Program classification</h3>
-              <dl className="compact-record">
-                <InfoRow label="Opportunity" value={grant.opportunityNumber}/>
-                <InfoRow label="Category" value={details?.opportunityCategory}/>
-                <InfoRow label="Instrument" value={details?.fundingInstrumentTypes.join(", ")}/>
-                <InfoRow label="Cost sharing" value={details?.costSharingOrMatchingRequirement}/>
-                <InfoRow label="Posted" value={formatDate(grant.postedAt)}/>
-                <InfoRow label="Archive date" value={details?.archiveDateLabel}/>
-              </dl>
-            </article>
+              <div className="briefing-main-support">
+                <article className="briefing-card eligibility-card">
+                  <div className="briefing-card-label"><span>02</span><Users size={17}/> Eligibility</div>
+                  <h3>Who can apply</h3>
+                  {details?.eligibleApplicants.length ? <ul className="eligibility-list compact-list">{details.eligibleApplicants.map((applicant) => <li key={applicant}><CheckCircle2 size={16}/><span>{applicant}</span></li>)}</ul> : <p className="detail-muted">The source does not provide a structured applicant list.</p>}
+                  {details?.eligibilityAdditionalInformation ? <details className="secondary-disclosure"><summary>Additional eligibility terms <ChevronDown size={15}/></summary><div>{details.eligibilityAdditionalInformation}</div></details> : null}
+                </article>
 
-            <article className="briefing-card eligibility-card">
-              <div className="briefing-card-label"><span>02</span><Users size={17}/> Eligibility</div>
-              <h3>Who can apply</h3>
-              {details?.eligibleApplicants.length ? <ul className="eligibility-list compact-list">{details.eligibleApplicants.map((applicant) => <li key={applicant}><CheckCircle2 size={16}/><span>{applicant}</span></li>)}</ul> : <p className="detail-muted">The source does not provide a structured applicant list.</p>}
-              {details?.eligibilityAdditionalInformation ? <details className="secondary-disclosure"><summary>Additional eligibility terms <ChevronDown size={15}/></summary><div>{details.eligibilityAdditionalInformation}</div></details> : null}
-            </article>
-
-            <article className="briefing-card application-card">
-              <div className="briefing-card-label"><span>03</span><Route size={17}/> Application</div>
-              <h3>Your route to submission</h3>
-              <p>{details?.applicationInstructions || "Use the official opportunity record to review the application package and submission instructions."}</p>
-              <a className="briefing-action" href={officialDestination} target="_blank" rel="noreferrer">Continue to Grants.gov <ArrowUpRight size={15}/></a>
-            </article>
-
-            <article className="briefing-card contact-card">
-              <div className="briefing-card-label"><span>04</span><Mail size={17}/> Grantor contact</div>
-              <h3>Questions about the notice</h3>
-              {details?.grantorContactDescription ? <p>{details.grantorContactDescription}</p> : <p className="detail-muted">No contact description was included.</p>}
-              {details?.grantorContactEmail ? <a className="briefing-action secondary" href={`mailto:${details.grantorContactEmail}`}><Mail size={15}/>{details.grantorContactEmail}</a> : null}
-            </article>
-
-            <article className="briefing-card taxonomy-card">
-              <div className="briefing-card-label"><span>Funding map</span><Building2 size={17}/></div>
-              <h3>Programs and activity</h3>
-              {details?.assistanceListings.length ? <div className="assistance-grid">{details.assistanceListings.map((listing) => <div key={listing.number}><strong>{listing.number}</strong><span>{listing.title}</span></div>)}</div> : null}
-              <div className="sidebar-tags board-tags">{(details?.fundingActivityCategories.length ? details.fundingActivityCategories : grant.themes).map((theme) => <span key={theme}>{theme}</span>)}</div>
-              {details?.fundingActivityCategoryExplanation ? <p className="taxonomy-note">{details.fundingActivityCategoryExplanation}</p> : null}
-            </article>
-
-            {documents.length ? <article className="briefing-card resources-card">
-              <div className="briefing-card-label"><span>05</span><FileText size={17}/> Source materials</div>
-              <h3>Documents and program links</h3>
-              <div className="document-list compact-documents">
-                {documents.map((item) => <a key={`${item.url}-${item.name}`} href={item.url} target="_blank" rel="noreferrer"><FileText size={16}/><span>{item.name}</span><ArrowUpRight size={14}/></a>)}
+                <article className="briefing-card application-card">
+                  <div className="briefing-card-label"><span>03</span><Route size={17}/> Application</div>
+                  <h3>Your route to submission</h3>
+                  <p>{details?.applicationInstructions || "Use the official opportunity record to review the application package and submission instructions."}</p>
+                  <a className="briefing-action" href={officialDestination} target="_blank" rel="noreferrer">Continue to Grants.gov <ArrowUpRight size={15}/></a>
+                </article>
               </div>
-            </article> : null}
 
-            <article className="briefing-card source-card">
-              <div className="briefing-card-label"><span>Source control</span><ShieldCheck size={17}/></div>
-              <h3>Official record still controls</h3>
-              <p>Grant Grinder makes public funding data easier to scan. Always use the government notice for final eligibility, deadlines, amendments, and submission rules.</p>
-              <a className="briefing-action secondary" href={officialDestination} target="_blank" rel="noreferrer">Open official record <ArrowUpRight size={15}/></a>
-            </article>
+              {documents.length ? <article className="briefing-card resources-card">
+                <div className="briefing-card-label"><span>05</span><FileText size={17}/> Source materials</div>
+                <h3>Documents and program links</h3>
+                <div className="document-list compact-documents">
+                  {documents.map((item) => <a key={`${item.url}-${item.name}`} href={item.url} target="_blank" rel="noreferrer"><FileText size={16}/><span>{item.name}</span><ArrowUpRight size={14}/></a>)}
+                </div>
+              </article> : null}
+            </div>
+
+            <aside className="briefing-rail briefing-rail-left" aria-label="Opportunity classification">
+              <article className="briefing-card decision-card">
+                <div className="briefing-card-label"><span>At a glance</span><Landmark size={17}/></div>
+                <h3>Program classification</h3>
+                <dl className="compact-record">
+                  <InfoRow label="Opportunity" value={grant.opportunityNumber}/>
+                  <InfoRow label="Category" value={details?.opportunityCategory}/>
+                  <InfoRow label="Instrument" value={details?.fundingInstrumentTypes.join(", ")}/>
+                  <InfoRow label="Cost sharing" value={details?.costSharingOrMatchingRequirement}/>
+                  <InfoRow label="Posted" value={formatDate(grant.postedAt)}/>
+                  <InfoRow label="Archive date" value={details?.archiveDateLabel}/>
+                </dl>
+              </article>
+
+              <article className="briefing-card taxonomy-card">
+                <div className="briefing-card-label"><span>Funding map</span><Building2 size={17}/></div>
+                <h3>Programs and activity</h3>
+                {details?.assistanceListings.length ? <div className="assistance-grid">{details.assistanceListings.map((listing) => <div key={listing.number}><strong>{listing.number}</strong><span>{listing.title}</span></div>)}</div> : null}
+                <div className="sidebar-tags board-tags">{(details?.fundingActivityCategories.length ? details.fundingActivityCategories : grant.themes).map((theme) => <span key={theme}>{theme}</span>)}</div>
+                {details?.fundingActivityCategoryExplanation ? <p className="taxonomy-note">{details.fundingActivityCategoryExplanation}</p> : null}
+              </article>
+            </aside>
+
+            <aside className="briefing-rail briefing-rail-right" aria-label="Opportunity contacts and source control">
+              <article className="briefing-card contact-card">
+                <div className="briefing-card-label"><span>04</span><Mail size={17}/> Grantor contact</div>
+                <h3>Questions about the notice</h3>
+                {details?.grantorContactDescription ? <p>{details.grantorContactDescription}</p> : <p className="detail-muted">No contact description was included.</p>}
+                {details?.grantorContactEmail ? <a className="briefing-action secondary" href={`mailto:${details.grantorContactEmail}`}><Mail size={15}/>{details.grantorContactEmail}</a> : null}
+              </article>
+
+              <article className="briefing-card source-card">
+                <div className="briefing-card-label"><span>Source control</span><ShieldCheck size={17}/></div>
+                <h3>Official record still controls</h3>
+                <p>Grant Grinder makes public funding data easier to scan. Always use the government notice for final eligibility, deadlines, amendments, and submission rules.</p>
+                <a className="briefing-action secondary" href={officialDestination} target="_blank" rel="noreferrer">Open official record <ArrowUpRight size={15}/></a>
+              </article>
+            </aside>
           </div>
         </section>
       </main>

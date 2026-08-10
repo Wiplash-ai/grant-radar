@@ -54,6 +54,14 @@ for (const grant of catalog.grants) {
 
 const staticRoutes = [
   {
+    route: "/search",
+    title: "Search current federal grants | Grant Grinder",
+    description: `Search ${catalog.grants.length.toLocaleString()} current U.S. federal grants by keyword, agency, eligibility, category, deadline, status, and funding amount.`,
+    type: "website",
+    structuredType: "SearchResultsPage",
+    fallback: `<main class="seo-fallback"><h1>Search current federal grants</h1><p>Search ${catalog.grants.length.toLocaleString()} current federal funding opportunities by the work you do, the people you serve, your organization type, agency, deadline, and funding amount.</p><a href="${siteBase}">About Grant Grinder</a></main>`
+  },
+  {
     route: "/developers",
     title: "Grant Grinder API documentation — Federal grants API",
     description: "Developer documentation for searching, filtering, sorting, and retrieving complete current U.S. federal grant opportunities through the paid Grant Grinder API.",
@@ -74,7 +82,7 @@ for (const page of staticRoutes) {
   await writeRoute(page.route, replaceMeta(shell, {
     ...page,
     url,
-    structuredData: { "@context": "https://schema.org", "@type": "WebPage", name: page.title, description: page.description, url }
+    structuredData: { "@context": "https://schema.org", "@type": page.structuredType || "WebPage", name: page.title, description: page.description, url }
   }));
 }
 

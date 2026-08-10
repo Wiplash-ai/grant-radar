@@ -76,7 +76,7 @@ export function homeSeo(total?: number) {
         url: absolutePath("/"),
         potentialAction: {
           "@type": "SearchAction",
-          target: `${absolutePath("/")}?q={search_term_string}#results`,
+          target: `${absolutePath("/search")}?q={search_term_string}#results`,
           "query-input": "required name=search_term_string"
         }
       },
@@ -92,6 +92,24 @@ export function homeSeo(total?: number) {
         license: "https://www.usa.gov/government-copyright"
       }
     ]
+  });
+}
+
+export function searchSeo(total?: number) {
+  const description = `Search${total ? ` ${total.toLocaleString()}` : ""} current U.S. federal grants by keyword, agency, eligibility, category, deadline, status, and funding amount.`;
+  setSeo({
+    title: "Search current federal grants | Grant Grinder",
+    description,
+    path: "/search",
+    structuredData: {
+      "@context": "https://schema.org",
+      "@type": "SearchResultsPage",
+      name: "Search current federal grants",
+      description,
+      url: absolutePath("/search"),
+      isPartOf: { "@type": "WebSite", name: "Grant Grinder", url: absolutePath("/") },
+      about: { "@type": "Dataset", name: "Current U.S. federal funding opportunities" }
+    }
   });
 }
 

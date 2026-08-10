@@ -18,7 +18,7 @@ import {
   UsersRound,
 } from "lucide-react";
 import { searchGrants } from "./api";
-import { homeSeo } from "./seo";
+import { homeSeo, searchSeo } from "./seo";
 import { SiteFooter, SiteHeader } from "./SiteChrome";
 import type { Grant, GrantFacetItem, GrantResponse } from "./types";
 
@@ -186,9 +186,11 @@ function CustomDropdown({ label, value, options, icon, onChange }: {
   </div>;
 }
 
-export default function App({ onSelectOpportunity }: { onSelectOpportunity: (id: string) => void }) {
-  const [query, setQuery] = useState("");
-  const [submittedQuery, setSubmittedQuery] = useState("");
+export default function App({ onSelectOpportunity, page: view = "home" }: { onSelectOpportunity: (id: string) => void; page?: "home" | "search" }) {
+  const initialQuery = new URLSearchParams(window.location.search).get("q") || "";
+  const isSearchPage = view === "search";
+  const [query, setQuery] = useState(initialQuery);
+  const [submittedQuery, setSubmittedQuery] = useState(initialQuery);
   const [filters, setFilters] = useState<Filters>(initialFilters);
   const [page, setPage] = useState(1);
   const [result, setResult] = useState<GrantResponse | null>(null);
@@ -212,12 +214,19 @@ export default function App({ onSelectOpportunity }: { onSelectOpportunity: (id:
   const agencies = result?.meta.facets?.agencies.length || 0;
   const total = result?.pagination.total ?? 0;
 
-  useEffect(() => { homeSeo(total || undefined); }, [total]);
+  useEffect(() => {
+    if (isSearchPage) searchSeo(total || undefined);
+    else homeSeo(total || undefined);
+  }, [isSearchPage, total]);
 
   function submit(event: FormEvent) {
     event.preventDefault();
     setPage(1);
     setSubmittedQuery(query);
+    if (isSearchPage) {
+      const search = query.trim() ? `?q=${encodeURIComponent(query.trim())}` : "";
+      window.history.replaceState({}, "", `/search${search}#results`);
+    }
     if (query.trim()) setFilters((current) => ({ ...current, sort: "relevance-desc" }));
   }
 
@@ -231,13 +240,15 @@ export default function App({ onSelectOpportunity }: { onSelectOpportunity: (id:
     setSubmittedQuery("");
     setFilters(initialFilters);
     setPage(1);
+    if (isSearchPage) window.history.replaceState({}, "", "/search");
   }
 
   return (
     <div className="page-shell">
       <SiteHeader />
 
-      <main>
+      <main className={isSearchPage ? "registry-page" : undefined}>
+        {!isSearchPage ? <>
         <section id="mission" className="hero">
           <div className="hero-copy">
             <div className="eyebrow"><ShieldCheck size={16} /> Every current federal opportunity / refreshed daily</div>
@@ -268,11 +279,12 @@ export default function App({ onSelectOpportunity }: { onSelectOpportunity: (id:
           <div><span>03</span><strong>Decision ready</strong><small>Eligibility, amounts &amp; contacts</small></div>
           <div><span>04</span><strong>{result?.meta.last_refresh_at ? formatDate(result.meta.last_refresh_at) : "Daily"}</strong><small>Last official-source sync</small></div>
         </section>
+        </> : null}
 
-        <section id="search" className="search-command" aria-label="Grant search">
+        <section id="search" className={`search-command${isSearchPage ? " search-command-page" : ""}`} aria-label="Grant search">
           <div className="command-heading">
             <span className="section-number">01</span>
-            <div><span>Funding desk</span><h2>What do you need to fund?</h2></div>
+            <div><span>{isSearchPage ? "Dedicated registry" : "Funding desk"}</span><h2>What do you need to fund?</h2></div>
           </div>
           <form onSubmit={submit}>
             <label className="search-box">

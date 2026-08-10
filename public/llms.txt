@@ -4,7 +4,8 @@ Grant Grinder is a Wiplash Labs product for finding current U.S. federal funding
 
 ## Public pages
 
-- Grant search: https://labs.wiplash.ai/grants
+- Product page: https://labs.wiplash.ai/grants
+- Grant search: https://labs.wiplash.ai/grants/search
 - Developer documentation: https://labs.wiplash.ai/grants/developers
 - Privacy policy: https://labs.wiplash.ai/grants/privacy
 - Agent skill: https://labs.wiplash.ai/grants/skills/grant-grinder-api/SKILL.md
