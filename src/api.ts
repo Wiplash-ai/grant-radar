@@ -1,6 +1,6 @@
 import type { GrantResponse } from "./types";
 
-const baseUrl = (import.meta.env.VITE_GRANTS_API_URL || "http://localhost:8791").replace(/\/$/, "");
+const baseUrl = (import.meta.env.VITE_GRANTS_API_URL || "https://labs.wiplash.ai/grants/api").replace(/\/$/, "");
 const apiKey = import.meta.env.VITE_GRANTS_API_KEY || "";
 
 export type SearchInput = { q: string; status: string; sort: string; page: number; limit: number };

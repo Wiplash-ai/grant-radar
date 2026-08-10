@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "description": "Search official-source U.S. government grant opportunities from any page.",
   "permissions": ["storage", "contextMenus"],
-  "host_permissions": ["https://api.grants.wiplash.ai/*", "http://localhost:8791/*"],
+  "host_permissions": ["https://labs.wiplash.ai/grants/api/*", "http://localhost:8791/*"],
   "optional_host_permissions": ["https://*/*"],
   "background": { "service_worker": "background.js" },
   "action": { "default_title": "Search government grants", "default_popup": "popup.html" },

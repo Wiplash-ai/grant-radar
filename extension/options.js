@@ -1,4 +1,4 @@
-const defaults = { apiUrl: "https://api.grants.wiplash.ai", apiKey: "" };
+const defaults = { apiUrl: "https://labs.wiplash.ai/grants/api", apiKey: "" };
 const form = document.getElementById("optionsForm");
 const apiUrl = document.getElementById("apiUrl");
 const apiKey = document.getElementById("apiKey");

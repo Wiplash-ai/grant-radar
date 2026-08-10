@@ -79,9 +79,9 @@ export default function App() {
             </div>
           </form>
           <div className="deck-stats">
-            <div><strong>{result?.pagination.total ?? "—"}</strong><span>matching opportunities</span></div>
-            <div><strong>{agencies || "—"}</strong><span>agencies on this page</span></div>
-            <div><strong>{result?.meta.last_refresh_at ? formatDate(result.meta.last_refresh_at) : "—"}</strong><span>source refresh</span></div>
+            <div data-index="01"><strong>{result?.pagination.total ?? "—"}</strong><span>matching opportunities</span></div>
+            <div data-index="02"><strong>{agencies || "—"}</strong><span>agencies on this page</span></div>
+            <div data-index="03"><strong>{result?.meta.last_refresh_at ? formatDate(result.meta.last_refresh_at) : "—"}</strong><span>source refresh</span></div>
           </div>
         </section>
 

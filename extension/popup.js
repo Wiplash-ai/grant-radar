@@ -3,7 +3,7 @@ const query = document.getElementById("query");
 const status = document.getElementById("status");
 const results = document.getElementById("results");
 const meta = document.getElementById("meta");
-const defaults = { apiUrl: "https://api.grants.wiplash.ai", apiKey: "" };
+const defaults = { apiUrl: "https://labs.wiplash.ai/grants/api", apiKey: "" };
 
 function escapeHtml(value) { const node = document.createElement("span"); node.textContent = value || ""; return node.innerHTML; }
 function date(value) { return value ? new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(value)) : "TBD"; }
