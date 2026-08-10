@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "Grant Radar",
+  "name": "Grant Grinder",
   "version": "0.1.0",
-  "description": "Search official-source U.S. government grant opportunities from any page.",
+  "description": "Find current official-source U.S. government grants from any page.",
+  "homepage_url": "https://labs.wiplash.ai/grants",
   "permissions": ["storage", "contextMenus"],
   "host_permissions": ["https://labs.wiplash.ai/grants/api/*", "http://localhost:8791/*"],
   "optional_host_permissions": ["https://*/*"],

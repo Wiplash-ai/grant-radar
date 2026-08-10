@@ -11,7 +11,7 @@ function money(value) { return value ? new Intl.NumberFormat("en-US", { style: "
 
 async function search() {
   const settings = { ...defaults, ...await chrome.storage.sync.get(defaults) };
-  const params = new URLSearchParams({ q: query.value.trim(), status: status.value, sort: "close-date-asc", limit: "20" });
+  const params = new URLSearchParams({ q: query.value.trim(), status: status.value, sort: query.value.trim() ? "relevance-desc" : "close-date-asc", limit: "20" });
   if (!status.value) params.delete("status");
   results.innerHTML = '<div class="empty">Scanning official-source opportunities…</div>';
   try {
@@ -19,7 +19,7 @@ async function search() {
     const body = await response.json();
     if (!response.ok) throw new Error(body?.error?.message || `API returned ${response.status}`);
     meta.textContent = `${body.pagination.total} matches · page 1 of ${body.pagination.pages}`;
-    results.innerHTML = body.data.length ? body.data.map((grant) => `<article class="card"><div class="agency">${escapeHtml(grant.agency)} · ${escapeHtml(grant.status)}</div><h2>${escapeHtml(grant.title)}</h2><p>${escapeHtml(grant.summary)}</p><div class="facts"><span>Closes ${date(grant.closeAt)}</span><span>Up to ${escapeHtml(grant.awardCeilingLabel || money(grant.awardCeilingUsd))}</span></div><a href="${escapeHtml(grant.officialUrl)}" target="_blank">Official notice <span>↗</span></a></article>`).join("") : '<div class="empty">No opportunities matched. Try a broader phrase.</div>';
+    results.innerHTML = body.data.length ? body.data.map((grant) => { const id = String(grant.key || "").replace(/^opportunity:/, ""); return `<article class="card"><div class="agency">${escapeHtml(grant.agency)} · ${escapeHtml(grant.status)}</div><h2>${escapeHtml(grant.title)}</h2><p>${escapeHtml(grant.descriptionExcerpt || grant.summary)}</p><div class="facts"><span>Closes ${date(grant.closeAt)}</span><span>Up to ${escapeHtml(grant.awardCeilingLabel || money(grant.programFundingUsd || grant.awardCeilingUsd))}</span></div><a href="https://labs.wiplash.ai/grants/opportunity/${encodeURIComponent(id)}" target="_blank">Open funding briefing <span>↗</span></a></article>`; }).join("") : '<div class="empty">No opportunities matched. Try a broader phrase.</div>';
   } catch (error) {
     meta.textContent = "Connection issue";
     results.innerHTML = `<div class="empty error">${escapeHtml(error.message)}<br>Check API settings from the menu above.</div>`;

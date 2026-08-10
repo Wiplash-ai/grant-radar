@@ -1,0 +1,15 @@
+# Grant Grinder
+
+Grant Grinder is a Wiplash Labs product for finding current U.S. federal funding opportunities. It indexes every posted and forecasted Grants.gov opportunity daily and presents official descriptions, eligibility, funding, deadlines, contacts, and source links in a normalized format.
+
+## Public pages
+
+- Grant search: https://labs.wiplash.ai/grants
+- Developer documentation: https://labs.wiplash.ai/grants/developers
+- Privacy policy: https://labs.wiplash.ai/grants/privacy
+- Agent skill: https://labs.wiplash.ai/grants/skills/grant-grinder-api/SKILL.md
+- OpenAPI specification: https://labs.wiplash.ai/grants/api/openapi.json
+
+## Source policy
+
+Grant Grinder is not a government agency. The linked government notice controls eligibility, dates, amendments, and application requirements. Agents should link to the officialUrl returned for each opportunity.

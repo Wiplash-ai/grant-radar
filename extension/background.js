@@ -1,7 +1,7 @@
-const MENU_ID = "grant-radar-search-selection";
+const MENU_ID = "grant-grinder-search-selection";
 
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.contextMenus.removeAll(() => chrome.contextMenus.create({ id: MENU_ID, title: "Search Grant Radar for “%s”", contexts: ["selection"] }));
+  chrome.contextMenus.removeAll(() => chrome.contextMenus.create({ id: MENU_ID, title: "Search Grant Grinder for “%s”", contexts: ["selection"] }));
 });
 
 chrome.contextMenus.onClicked.addListener(async (info) => {

@@ -1,6 +1,6 @@
-# Grant Radar
+# Grant Grinder
 
-Public web app and Manifest V3 browser extension for searching source-attributed U.S. government grant opportunities through the private Wiplash Grants API.
+Public web app and Manifest V3 browser extension for searching source-attributed U.S. government grant opportunities through the private Grant Grinder API.
 
 ## Web app
 
@@ -13,6 +13,15 @@ npm run dev
 Set `VITE_GRANTS_API_URL` to the API origin. Do not embed a paid customer credential in a public web build; use a public free tier or a same-origin server proxy in production.
 
 Search results open a dedicated Wiplash-designed opportunity briefing at `/opportunity/:id`. The page presents the official description, eligibility, funding terms, assistance listings, application route, grantor contact, documents, and source links supplied by the private API.
+
+The build pre-renders every actionable opportunity route, the developer documentation, and the privacy policy. Refresh the checked-in SEO catalog from a running API before a release:
+
+```bash
+npm run seo:sync
+npm run check
+```
+
+Public integration resources are available at `/developers`, `/skills/grant-grinder-api/SKILL.md`, `/llms.txt`, and `/sitemap.xml`.
 
 ## Browser extension
 
@@ -30,7 +39,7 @@ Package it with:
 npm run extension:zip
 ```
 
-The ZIP is written to `artifacts/grant-radar-extension.zip`.
+The ZIP is written to `artifacts/grant-grinder-extension.zip`.
 
 ## Architecture
 
@@ -40,4 +49,4 @@ The campaign hero uses an original Wiplash-generated fictional field scene rathe
 
 ## Disclaimer
 
-Grant Radar supports discovery. It does not determine eligibility, guarantee funding, or replace the official notice. Users should verify every deadline, requirement, and application instruction at the linked government source.
+Grant Grinder supports discovery. It does not determine eligibility, guarantee funding, or replace the official notice. Users should verify every deadline, requirement, and application instruction at the linked government source.

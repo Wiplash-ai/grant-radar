@@ -15,7 +15,22 @@ export type Grant = {
   fitScore: number;
   fitReasons: string[];
   summary: string;
+  descriptionExcerpt?: string;
+  eligibleApplicants: string[];
+  fundingActivityCategories: string[];
+  fundingInstrumentTypes: string[];
+  assistanceListingNumbers: string[];
+  programFundingUsd?: number;
   lastVerifiedAt?: string;
+};
+
+export type GrantFacetItem = { value: string; count: number };
+export type GrantSearchFacets = {
+  statuses: GrantFacetItem[];
+  agencies: GrantFacetItem[];
+  fundingCategories: GrantFacetItem[];
+  fundingInstruments: GrantFacetItem[];
+  eligibleApplicants: GrantFacetItem[];
 };
 
 export type GrantOpportunityDetails = {
@@ -62,7 +77,7 @@ export type GrantDetail = Grant & {
 export type GrantResponse = {
   data: Grant[];
   pagination: { total: number; page: number; limit: number; pages: number };
-  meta: { generated_at: string; last_refresh_at?: string };
+  meta: { generated_at: string; last_refresh_at?: string; facets: GrantSearchFacets };
 };
 
 export type GrantDetailResponse = { data: GrantDetail; meta: { generated_at: string } };

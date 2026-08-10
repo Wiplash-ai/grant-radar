@@ -10,11 +10,12 @@ export function SiteHeader() {
       <header className="site-header">
         <a className="brand" href="/">
           <img src="/radar-mark.svg" alt="" />
-          <span><strong>Grant Radar</strong><small>Federal Opportunity Desk</small></span>
+          <span><strong>Grant Grinder</strong><small>Federal Funding Desk</small></span>
         </a>
         <nav aria-label="Primary navigation">
           <a href="/#mission">Mission</a>
           <a href="/#search">Find funding</a>
+          <a href="/developers">Developers</a>
           <a href="https://github.com/Wiplash-ai/grant-radar">Get the extension</a>
         </nav>
         <a className="header-cta" href="/#search">Search the registry <ArrowDown size={14} /></a>
@@ -30,6 +31,8 @@ export function SiteFooter() {
       <p>Produced by <a href="https://wiplash.ai/">Wiplash.ai</a></p>
       <nav aria-label="Footer navigation">
         <a href="/">Grant search</a>
+        <a href="/developers">API docs</a>
+        <a href="/privacy">Privacy</a>
         <a href="https://github.com/Wiplash-ai/grant-radar">GitHub <ArrowUpRight size={12}/></a>
       </nav>
     </footer>

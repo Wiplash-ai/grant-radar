@@ -2,6 +2,7 @@ import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import OpportunityPage from "./OpportunityPage";
+import { DeveloperPage, PrivacyPage } from "./StaticPages";
 import "./styles.css";
 
 function routeId() {
@@ -10,9 +11,10 @@ function routeId() {
 
 function Root() {
   const [opportunityId, setOpportunityId] = useState(routeId);
+  const [pathname, setPathname] = useState(window.location.pathname);
 
   useEffect(() => {
-    const handleNavigation = () => setOpportunityId(routeId());
+    const handleNavigation = () => { setOpportunityId(routeId()); setPathname(window.location.pathname); };
     window.addEventListener("popstate", handleNavigation);
     return () => window.removeEventListener("popstate", handleNavigation);
   }, []);
@@ -20,17 +22,22 @@ function Root() {
   function openOpportunity(id: string) {
     window.history.pushState({}, "", `/opportunity/${encodeURIComponent(id)}`);
     setOpportunityId(id);
+    setPathname(window.location.pathname);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function returnToRegistry() {
     window.history.pushState({}, "", "/#results");
     setOpportunityId("");
-    document.title = "Grant Radar — Fund the mission";
+    setPathname("/");
+    document.title = "Grant Grinder — Find federal funding you can act on";
     requestAnimationFrame(() => document.querySelector("#results")?.scrollIntoView({ behavior: "smooth" }));
   }
 
-  return opportunityId ? <OpportunityPage id={opportunityId} onBack={returnToRegistry} /> : <App onSelectOpportunity={openOpportunity} />;
+  if (opportunityId) return <OpportunityPage id={opportunityId} onBack={returnToRegistry} />;
+  if (/^\/developers\/?$/.test(pathname)) return <DeveloperPage />;
+  if (/^\/privacy\/?$/.test(pathname)) return <PrivacyPage />;
+  return <App onSelectOpportunity={openOpportunity} />;
 }
 
 createRoot(document.getElementById("root")!).render(<StrictMode><Root /></StrictMode>);
