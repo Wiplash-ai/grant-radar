@@ -13,7 +13,7 @@ Search, filter, facet, sort, and paginate current opportunity records.
 | `agency` | Exact facet value | Use `meta.facets.agencies`. |
 | `funding_category` | Exact facet value | Examples: `Agriculture`, `Arts`, `Education`, `Health`, `Housing`. |
 | `funding_instrument` | Exact facet value | Common values: `Grant`, `Cooperative Agreement`, `Other`, `Procurement Contract`. |
-| `eligible_applicant` | Exact facet value | Examples: `Individuals`, `Small businesses`, `Nonprofits with 501(c)(3) status`. |
+| `eligible_applicant` | Exact facet value | Matches official classifications and concrete applicant groups extracted from eligibility language. Use `meta.facets.eligibleApplicants`. |
 | `assistance_listing` | `NN.XXX` | Formerly CFDA number. |
 | `min_award` | Non-negative USD number | Keeps records whose maximum award or program funding meets the minimum. |
 | `max_award` | Non-negative USD number | Keeps records whose minimum known award does not exceed the maximum. |
@@ -73,10 +73,10 @@ Retrieve one complete record. `{key}` can be the returned `key`, its numeric Gra
 
 The detail response adds:
 
-- complete official description;
-- structured eligible applicants and additional eligibility terms;
+- normalized official `description` and derived CommonMark `descriptionMarkdown`;
+- official `eligibleApplicants`, extracted `eligibilityHighlights`, and complete additional eligibility terms;
 - total program funding and award terms;
-- grantor contact and email;
+- grantor contact, email, and normalized phone actions in `grantorContactPhones`;
 - Assistance Listings;
 - funding instruments and activity categories;
 - application instructions;

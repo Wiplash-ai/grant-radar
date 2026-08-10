@@ -51,6 +51,36 @@ const initialFilters: Filters = {
   sort: "relevance-desc"
 };
 
+function filtersFromUrl(): Filters {
+  const params = new URLSearchParams(window.location.search);
+  return {
+    status: params.get("status") || "",
+    agency: params.get("agency") || "",
+    fundingCategory: params.get("funding_category") || "",
+    fundingInstrument: params.get("funding_instrument") || "",
+    eligibleApplicant: params.get("eligible_applicant") || "",
+    minAward: params.get("min_award") || "",
+    deadlineDays: params.get("deadline_days") || "",
+    hasFundingAmount: params.get("has_funding_amount") === "true",
+    sort: params.get("sort") || "relevance-desc"
+  };
+}
+
+function registryUrl(query: string, filters: Filters, includeResults = true) {
+  const params = new URLSearchParams();
+  if (query.trim()) params.set("q", query.trim());
+  if (filters.status) params.set("status", filters.status);
+  if (filters.agency) params.set("agency", filters.agency);
+  if (filters.fundingCategory) params.set("funding_category", filters.fundingCategory);
+  if (filters.fundingInstrument) params.set("funding_instrument", filters.fundingInstrument);
+  if (filters.eligibleApplicant) params.set("eligible_applicant", filters.eligibleApplicant);
+  if (filters.minAward) params.set("min_award", filters.minAward);
+  if (filters.deadlineDays) params.set("deadline_days", filters.deadlineDays);
+  if (filters.hasFundingAmount) params.set("has_funding_amount", "true");
+  if (filters.sort !== "relevance-desc") params.set("sort", filters.sort);
+  return `/search${params.size ? `?${params}` : ""}${includeResults ? "#results" : ""}`;
+}
+
 function GrantCard({ grant, index, onSelect }: { grant: Grant; index: number; onSelect: (id: string) => void }) {
   const id = grant.key.replace(/^opportunity:/, "");
   const category = grant.fundingActivityCategories?.[0] || grant.themes?.[0];
@@ -191,7 +221,7 @@ export default function App({ onSelectOpportunity, page: view = "home" }: { onSe
   const isSearchPage = view === "search";
   const [query, setQuery] = useState(initialQuery);
   const [submittedQuery, setSubmittedQuery] = useState(initialQuery);
-  const [filters, setFilters] = useState<Filters>(initialFilters);
+  const [filters, setFilters] = useState<Filters>(filtersFromUrl);
   const [page, setPage] = useState(1);
   const [result, setResult] = useState<GrantResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -223,15 +253,17 @@ export default function App({ onSelectOpportunity, page: view = "home" }: { onSe
     event.preventDefault();
     setPage(1);
     setSubmittedQuery(query);
-    if (isSearchPage) {
-      const search = query.trim() ? `?q=${encodeURIComponent(query.trim())}` : "";
-      window.history.replaceState({}, "", `/search${search}#results`);
-    }
-    if (query.trim()) setFilters((current) => ({ ...current, sort: "relevance-desc" }));
+    const nextFilters = query.trim() ? { ...filters, sort: "relevance-desc" } : filters;
+    if (query.trim()) setFilters(nextFilters);
+    if (isSearchPage) window.history.replaceState({}, "", registryUrl(query, nextFilters));
   }
 
   function updateFilter<Key extends keyof Filters>(key: Key, value: Filters[Key]) {
-    setFilters((current) => ({ ...current, [key]: value }));
+    setFilters((current) => {
+      const next = { ...current, [key]: value };
+      if (isSearchPage) window.history.replaceState({}, "", registryUrl(submittedQuery, next));
+      return next;
+    });
     setPage(1);
   }
 

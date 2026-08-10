@@ -57,8 +57,9 @@ curl "https://labs.wiplash.ai/grants/api/v1/grants/opportunity%3A363515" \
 
 - Distinguish `open` from `forecasted` opportunities.
 - Treat missing amounts or dates as unknown, not zero.
-- Do not claim a user is eligible solely because an applicant-type facet matches; read `details.eligibilityAdditionalInformation`.
-- Prefer `programFundingUsd` for total program funding and `awardCeilingUsd` for the maximum single award.
+- Do not claim a user is eligible solely because an applicant-type facet matches; use `details.eligibilityHighlights` for triage and verify every condition in `details.eligibilityAdditionalInformation`.
+- Treat `programFundingUsd` as the total funding pool across planned awards and `awardCeilingUsd` as the maximum for one award.
+- Use `details.descriptionMarkdown` for a structured reader view and retain `details.description` when exact source wording is required.
 - Cite the opportunity number, agency, close date, and official URL in recommendations.
 - Do not imply Grant Grinder or Wiplash.ai is a government agency.
 

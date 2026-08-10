@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import ReactMarkdown from "react-markdown";
 import {
   ArrowLeft,
   ArrowUpRight,
@@ -7,9 +8,12 @@ import {
   CheckCircle2,
   ChevronDown,
   CircleDollarSign,
+  Database,
   FileText,
   Landmark,
   Mail,
+  MessageCircle,
+  Phone,
   Route,
   ShieldCheck,
   Target,
@@ -26,21 +30,12 @@ const formatMoney = (value?: number) => value ? money.format(value) : "Not state
 const formatDate = (value?: string) => value ? new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(value)) : "Rolling / TBD";
 const meaningful = (value?: string) => value && !/^(--|not stated|none)$/i.test(value.trim()) ? value : undefined;
 
-function missionSummary(description: string) {
-  const normalized = description.replace(/\s+/g, " ").trim();
-  const sentences = typeof Intl.Segmenter === "function"
-    ? [...new Intl.Segmenter("en", { granularity: "sentence" }).segment(normalized)].map(({ segment }) => segment)
-    : normalized.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [normalized];
-  const selected: string[] = [];
-  for (const sentence of sentences) {
-    if (selected.join(" ").length + sentence.length > 620) {
-      if (!selected.length) return `${sentence.slice(0, 600).replace(/\s+\S*$/, "").trimEnd()}…`;
-      break;
-    }
-    selected.push(sentence.trim());
-    if (selected.length >= 3) break;
-  }
-  return selected.join(" ");
+function markdownFallback(description: string) {
+  return description
+    .replace(/\s+((?:Project|Program) (?:Audiences|Goals|Objectives)|Funding Priorities|Areas of Interest)\s*:\s*/gi, "\n\n## $1\n\n")
+    .replace(/\s*[•●▪◦·]\s*/g, "\n- ")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 }
 
 function InfoRow({ label, value }: { label: string; value?: string }) {
@@ -51,6 +46,7 @@ export default function OpportunityPage({ id, onBack }: { id: string; onBack: ()
   const [grant, setGrant] = useState<GrantDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [descriptionView, setDescriptionView] = useState<"reader" | "official">("reader");
 
   useEffect(() => {
     const controller = new AbortController();
@@ -66,7 +62,10 @@ export default function OpportunityPage({ id, onBack }: { id: string; onBack: ()
   }, [id]);
 
   const description = grant?.details?.description || grant?.summary || "The official source does not include a description.";
-  const summary = useMemo(() => missionSummary(description), [description]);
+  const descriptionMarkdown = useMemo(
+    () => grant?.details?.descriptionMarkdown || markdownFallback(description),
+    [description, grant?.details?.descriptionMarkdown]
+  );
 
   if (!grant) {
     return <div className="page-shell"><SiteHeader />
@@ -78,6 +77,15 @@ export default function OpportunityPage({ id, onBack }: { id: string; onBack: ()
   const details = grant.details;
   const officialDestination = details?.grantsGovUrl || grant.officialUrl;
   const documents = [...(details?.documents || []), ...(details?.additionalInformation || [])];
+  const applicantHighlights = details?.eligibilityHighlights?.length
+    ? details.eligibilityHighlights
+    : details?.eligibleApplicants || grant.eligibleApplicants;
+  const contactPhones = details?.grantorContactPhones || [];
+  const contactNarrative = contactPhones.reduce(
+    (value, phone) => value.replace(phone.raw, ""),
+    details?.grantorContactDescription || ""
+  ).replace(/^\s*phone\s*[:.-]?\s*$/i, "").trim();
+  const expectedAwards = grant.expectedAwardsLabel || grant.expectedAwards;
 
   return (
     <div className="page-shell">
@@ -95,57 +103,56 @@ export default function OpportunityPage({ id, onBack }: { id: string; onBack: ()
             <p><Building2 size={17}/>{grant.agency}</p>
             <div className="detail-actions">
               <a className="primary-action signal" href={officialDestination} target="_blank" rel="noreferrer">Review official notice <ArrowUpRight size={16}/></a>
-              <button className="text-action light" onClick={onBack}><ArrowLeft size={15}/> Back to results</button>
             </div>
           </div>
-          <aside className="detail-verification">
-            <ShieldCheck size={25}/>
-            <span>Source status</span>
-            <strong>Official record matched</strong>
-            <p>Verified {formatDate(details?.fetchedAt || grant.lastVerifiedAt)}. Confirm final terms before applying.</p>
+          <aside className="detail-glance">
+            <div className="detail-glance-label"><Landmark size={17}/><span>At a glance</span></div>
+            <dl>
+              <InfoRow label="Opportunity" value={grant.opportunityNumber}/>
+              <InfoRow label="Category" value={details?.opportunityCategory}/>
+              <InfoRow label="Instrument" value={details?.fundingInstrumentTypes.join(", ")}/>
+              <InfoRow label="Cost sharing" value={details?.costSharingOrMatchingRequirement}/>
+              <InfoRow label="Posted" value={formatDate(grant.postedAt)}/>
+              <InfoRow label="Archive date" value={details?.archiveDateLabel}/>
+            </dl>
           </aside>
         </section>
 
         <section className="detail-facts" aria-label="Opportunity summary">
-          <div><CalendarClock/><span>Application deadline</span><strong>{formatDate(grant.closeAt)}</strong></div>
-          <div><CircleDollarSign/><span>Program funding</span><strong>{meaningful(details?.programFundingLabel) || formatMoney(grant.programFundingUsd || grant.awardCeilingUsd)}</strong></div>
-          <div><Target/><span>Award ceiling</span><strong>{grant.awardCeilingLabel || formatMoney(grant.awardCeilingUsd)}</strong></div>
-          <div><Users/><span>Expected awards</span><strong>{grant.expectedAwardsLabel || grant.expectedAwards || "Not stated"}</strong></div>
+          <div><CalendarClock/><span>Application deadline</span><strong>{formatDate(grant.closeAt)}</strong><small>Official close date</small></div>
+          <div><CircleDollarSign/><span>Total funding pool</span><strong>{meaningful(details?.programFundingLabel) || formatMoney(grant.programFundingUsd)}</strong><small>Across all planned awards</small></div>
+          <div><Target/><span>Maximum single award</span><strong>{grant.awardCeilingLabel || formatMoney(grant.awardCeilingUsd)}</strong><small>No one award may exceed this</small></div>
+          <div><Users/><span>Planned grants</span><strong>{expectedAwards || "Not stated"}</strong><small>Agency estimate, not a guarantee</small></div>
         </section>
 
         <section id="briefing" className="briefing-board">
-          <div className="briefing-board-heading">
-            <div><span>Opportunity board</span><h2>Everything you need to decide whether to apply.</h2></div>
-            <p>We reorganized the official notice into a compact decision briefing. Expand the source language only when you need every detail.</p>
-          </div>
-
           <div className="briefing-grid briefing-dossier">
             <div className="briefing-main-column">
               <article className="briefing-card mission-card">
-                <div className="briefing-card-label"><span>01</span><Target size={17}/> Mission</div>
+                <div className="briefing-card-toolbar">
+                  <div className="briefing-card-label"><span>01</span><Target size={17}/> Mission</div>
+                  <div className="description-view-switch" role="group" aria-label="Description format">
+                    <button className={descriptionView === "reader" ? "active" : ""} onClick={() => setDescriptionView("reader")}>Reader view</button>
+                    <button className={descriptionView === "official" ? "active" : ""} onClick={() => setDescriptionView("official")}>Official text</button>
+                  </div>
+                </div>
                 <h3>What this opportunity funds</h3>
-                <p className="mission-summary">{summary}</p>
-                {description !== summary ? <details className="official-disclosure">
-                  <summary>Read the full official description <ChevronDown size={16}/></summary>
-                  <div className="official-copy-scroll">{description}</div>
-                </details> : null}
+                {descriptionView === "reader"
+                  ? <div className="grant-markdown"><ReactMarkdown components={{
+                      h1: ({ children }) => <h4>{children}</h4>,
+                      h2: ({ children }) => <h4>{children}</h4>,
+                      h3: ({ children }) => <h5>{children}</h5>
+                    }}>{descriptionMarkdown}</ReactMarkdown></div>
+                  : <div className="raw-description-scroll">{description}</div>}
               </article>
 
-              <div className="briefing-main-support">
-                <article className="briefing-card eligibility-card">
-                  <div className="briefing-card-label"><span>02</span><Users size={17}/> Eligibility</div>
-                  <h3>Who can apply</h3>
-                  {details?.eligibleApplicants.length ? <ul className="eligibility-list compact-list">{details.eligibleApplicants.map((applicant) => <li key={applicant}><CheckCircle2 size={16}/><span>{applicant}</span></li>)}</ul> : <p className="detail-muted">The source does not provide a structured applicant list.</p>}
-                  {details?.eligibilityAdditionalInformation ? <details className="secondary-disclosure"><summary>Additional eligibility terms <ChevronDown size={15}/></summary><div>{details.eligibilityAdditionalInformation}</div></details> : null}
-                </article>
-
-                <article className="briefing-card application-card">
-                  <div className="briefing-card-label"><span>03</span><Route size={17}/> Application</div>
-                  <h3>Your route to submission</h3>
-                  <p>{details?.applicationInstructions || "Use the official opportunity record to review the application package and submission instructions."}</p>
-                  <a className="briefing-action" href={officialDestination} target="_blank" rel="noreferrer">Continue to Grants.gov <ArrowUpRight size={15}/></a>
-                </article>
-              </div>
+              <article className="briefing-card eligibility-card">
+                <div className="briefing-card-label"><span>02</span><Users size={17}/> Eligibility</div>
+                <h3>Who can apply</h3>
+                {applicantHighlights.length ? <ul className="eligibility-list applicant-highlights">{applicantHighlights.map((applicant) => <li key={applicant}><CheckCircle2 size={17}/><span>{applicant}</span></li>)}</ul> : <p className="detail-muted">The source does not provide a structured applicant list.</p>}
+                {details?.eligibleApplicants?.length ? <div className="official-applicant-code"><span>Official Grants.gov classification</span><strong>{details.eligibleApplicants.join(" · ")}</strong></div> : null}
+                {details?.eligibilityAdditionalInformation ? <details className="secondary-disclosure"><summary>Read every eligibility term <ChevronDown size={15}/></summary><div>{details.eligibilityAdditionalInformation}</div></details> : null}
+              </article>
 
               {documents.length ? <article className="briefing-card resources-card">
                 <div className="briefing-card-label"><span>05</span><FileText size={17}/> Source materials</div>
@@ -157,41 +164,38 @@ export default function OpportunityPage({ id, onBack }: { id: string; onBack: ()
             </div>
 
             <aside className="briefing-rail briefing-rail-left" aria-label="Opportunity classification">
-              <article className="briefing-card decision-card">
-                <div className="briefing-card-label"><span>At a glance</span><Landmark size={17}/></div>
-                <h3>Program classification</h3>
-                <dl className="compact-record">
-                  <InfoRow label="Opportunity" value={grant.opportunityNumber}/>
-                  <InfoRow label="Category" value={details?.opportunityCategory}/>
-                  <InfoRow label="Instrument" value={details?.fundingInstrumentTypes.join(", ")}/>
-                  <InfoRow label="Cost sharing" value={details?.costSharingOrMatchingRequirement}/>
-                  <InfoRow label="Posted" value={formatDate(grant.postedAt)}/>
-                  <InfoRow label="Archive date" value={details?.archiveDateLabel}/>
-                </dl>
-              </article>
-
               <article className="briefing-card taxonomy-card">
                 <div className="briefing-card-label"><span>Funding map</span><Building2 size={17}/></div>
                 <h3>Programs and activity</h3>
                 {details?.assistanceListings.length ? <div className="assistance-grid">{details.assistanceListings.map((listing) => <div key={listing.number}><strong>{listing.number}</strong><span>{listing.title}</span></div>)}</div> : null}
-                <div className="sidebar-tags board-tags">{(details?.fundingActivityCategories.length ? details.fundingActivityCategories : grant.themes).map((theme) => <span key={theme}>{theme}</span>)}</div>
+                <div className="sidebar-tags board-tags">{(details?.fundingActivityCategories.length ? details.fundingActivityCategories : grant.themes).map((theme) => <a key={theme} href={`/search?funding_category=${encodeURIComponent(theme)}#results`} target="_blank" rel="noreferrer"><span>{theme}</span><ArrowUpRight size={12}/></a>)}</div>
                 {details?.fundingActivityCategoryExplanation ? <p className="taxonomy-note">{details.fundingActivityCategoryExplanation}</p> : null}
               </article>
             </aside>
 
             <aside className="briefing-rail briefing-rail-right" aria-label="Opportunity contacts and source control">
+              <article className="briefing-card application-card source-card">
+                <div className="briefing-card-label"><span>03</span><Route size={17}/> Application &amp; source</div>
+                <h3>Submit with the official record</h3>
+                <p>{details?.applicationInstructions || "Use the official opportunity record to review the application package and submission instructions."}</p>
+                <a className="briefing-action" href={officialDestination} target="_blank" rel="noreferrer">Continue to Grants.gov <ArrowUpRight size={15}/></a>
+                <div className="source-assurance"><ShieldCheck size={17}/><p><strong>Source checked {formatDate(details?.fetchedAt || grant.lastVerifiedAt)}</strong>The government notice controls final eligibility, amendments, deadlines, and submission rules.</p></div>
+                <details className="raw-data-disclosure">
+                  <summary><Database size={15}/> View raw API record <ChevronDown size={14}/></summary>
+                  <pre>{JSON.stringify(grant, null, 2)}</pre>
+                </details>
+              </article>
+
               <article className="briefing-card contact-card">
                 <div className="briefing-card-label"><span>04</span><Mail size={17}/> Grantor contact</div>
                 <h3>Questions about the notice</h3>
-                {details?.grantorContactDescription ? <p>{details.grantorContactDescription}</p> : <p className="detail-muted">No contact description was included.</p>}
+                {contactNarrative ? <p>{contactNarrative}</p> : null}
+                {contactPhones.length ? <div className="contact-phone-list">{contactPhones.map((phone) => <div className="contact-phone" key={phone.telUrl}>
+                  <Phone size={17}/><div><span>Phone</span><strong>{phone.display}</strong></div>
+                  <div className="contact-phone-actions"><a href={phone.telUrl}><Phone size={13}/>Call</a>{phone.whatsappUrl ? <a href={phone.whatsappUrl} target="_blank" rel="noreferrer"><MessageCircle size={13}/>WhatsApp</a> : null}</div>
+                </div>)}</div> : null}
                 {details?.grantorContactEmail ? <a className="briefing-action secondary" href={`mailto:${details.grantorContactEmail}`}><Mail size={15}/>{details.grantorContactEmail}</a> : null}
-              </article>
-
-              <article className="briefing-card source-card">
-                <div className="briefing-card-label"><span>Source control</span><ShieldCheck size={17}/></div>
-                <h3>Official record still controls</h3>
-                <p>Grant Grinder makes public funding data easier to scan. Always use the government notice for final eligibility, deadlines, amendments, and submission rules.</p>
-                <a className="briefing-action secondary" href={officialDestination} target="_blank" rel="noreferrer">Open official record <ArrowUpRight size={15}/></a>
+                {!contactNarrative && !contactPhones.length && !details?.grantorContactEmail ? <p className="detail-muted">No grantor contact was included in the source record.</p> : null}
               </article>
             </aside>
           </div>

@@ -12,7 +12,7 @@ npm run dev
 
 Set `VITE_GRANTS_API_URL` to the API origin. Do not embed a paid customer credential in a public web build; use a public free tier or a same-origin server proxy in production.
 
-The home page introduces the product and includes an embedded search desk. `/search` is the dedicated filtering and results workspace. Search results open a Wiplash-designed opportunity briefing at `/opportunity/:id`, presenting the official description, eligibility, funding terms, assistance listings, application route, grantor contact, documents, and source links supplied by the private API.
+The home page introduces the product and includes an embedded search desk. `/search` is the dedicated filtering and results workspace. Search results open a Wiplash-designed opportunity briefing at `/opportunity/:id`, presenting a derived Markdown reader view alongside the official text, extracted applicant groups, clarified funding terms, dial-ready contacts, raw normalized JSON, documents, and source links supplied by the private API.
 
 The build pre-renders the search workspace, every actionable opportunity route, the developer documentation, and the privacy policy. Refresh the checked-in SEO catalog from a running API before a release:
 

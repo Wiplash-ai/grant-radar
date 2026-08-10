@@ -25,6 +25,12 @@ export type Grant = {
 };
 
 export type GrantFacetItem = { value: string; count: number };
+export type GrantContactPhone = {
+  raw: string;
+  display: string;
+  telUrl: string;
+  whatsappUrl?: string;
+};
 export type GrantSearchFacets = {
   statuses: GrantFacetItem[];
   agencies: GrantFacetItem[];
@@ -35,10 +41,13 @@ export type GrantSearchFacets = {
 
 export type GrantOpportunityDetails = {
   description?: string;
+  descriptionMarkdown?: string;
   eligibleApplicants: string[];
+  eligibilityHighlights?: string[];
   eligibilityAdditionalInformation?: string;
   grantorContactDescription?: string;
   grantorContactEmail?: string;
+  grantorContactPhones?: GrantContactPhone[];
   assistanceListings: Array<{ number: string; title: string }>;
   lastUpdatedLabel?: string;
   programFundingUsd?: number;

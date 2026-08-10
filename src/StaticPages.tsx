@@ -62,7 +62,7 @@ export function DeveloperPage() {
             ["agency", "Exact agency name from facets", "Department of Agriculture"],
             ["funding_category", "Official funding activity category", "Arts"],
             ["funding_instrument", "Official award instrument", "Grant"],
-            ["eligible_applicant", "Official applicant type", "Small businesses"],
+            ["eligible_applicant", "Applicant group or official classification from facets", "Small businesses"],
             ["assistance_listing", "Assistance Listing number", "10.001"],
             ["min_award / max_award", "Funding range in U.S. dollars", "50000"],
             ["closes_after / closes_before", "ISO date or timestamp deadline window", "2026-12-31"],
@@ -72,7 +72,7 @@ export function DeveloperPage() {
             ["page / limit", "Pagination; limit is 1–100", "page=2&limit=50"]
           ].map(([name, purpose, example]) => <div role="row" key={name}><code>{name}</code><span>{purpose}</span><code>{example}</code></div>)}</div></section>
 
-          <section id="responses"><div className="docs-label"><CheckCircle2 size={16}/> Responses</div><h2>Normalized records with decision-ready fields</h2><p>List responses include compact descriptions, eligibility, categories, instruments, funding amounts, official links, facets, and pagination. Detail responses add the complete official description, contact, assistance listings, application guidance, and source materials.</p><CodeBlock code={`{
+          <section id="responses"><div className="docs-label"><CheckCircle2 size={16}/> Responses</div><h2>Normalized records with decision-ready fields</h2><p>List responses include compact descriptions, eligibility, categories, instruments, funding amounts, official links, facets, and pagination. Detail responses add the official text, a derived CommonMark reader view, concrete eligibility highlights, dial-ready contact records, assistance listings, application guidance, and source materials.</p><CodeBlock code={`{
   "data": [{
     "key": "opportunity:363515",
     "title": "Public Diplomacy Grants / Small Grants Program",
@@ -81,7 +81,13 @@ export function DeveloperPage() {
     "eligibleApplicants": ["Individuals", "Nonprofits with 501(c)(3) status"],
     "fundingActivityCategories": ["Education", "Business and Commerce"],
     "programFundingUsd": 120000,
-    "officialUrl": "https://www.grants.gov/search-results-detail/363515"
+    "officialUrl": "https://www.grants.gov/search-results-detail/363515",
+    "details": {
+      "description": "Official source text...",
+      "descriptionMarkdown": "## Program goals\\n\\n- First priority",
+      "eligibilityHighlights": ["Community-based nonprofits"],
+      "grantorContactPhones": [{ "display": "(202) 555-0147", "telUrl": "tel:+12025550147" }]
+    }
   }],
   "pagination": { "total": 1, "page": 1, "limit": 10, "pages": 1 },
   "meta": { "facets": { "agencies": [], "fundingCategories": [] } }
