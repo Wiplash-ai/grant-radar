@@ -3,6 +3,8 @@ import type { ReactNode } from "react";
 import {
   ArrowDown,
   ArrowUpRight,
+  Bookmark,
+  BookmarkCheck,
   Building2,
   CalendarClock,
   Check,
@@ -11,21 +13,26 @@ import {
   ChevronRight,
   CircleDollarSign,
   Compass,
+  History,
   RotateCcw,
+  Save,
   Search,
   ShieldCheck,
   SlidersHorizontal,
   UsersRound,
 } from "lucide-react";
 import { searchGrants } from "./api";
+import { useAuth } from "./AuthContext";
+import { criteriaSummary } from "./search-links";
 import { homeSeo, searchSeo } from "./seo";
 import { SiteFooter, SiteHeader } from "./SiteChrome";
-import type { Grant, GrantFacetItem, GrantResponse } from "./types";
+import type { Grant, GrantFacetItem, GrantResponse, SearchCriteria } from "./types";
 
 const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", notation: "compact", maximumFractionDigits: 1 });
 const formatMoney = (value?: number) => value ? money.format(value) : "Not stated";
 const formatDate = (value?: string) => value ? new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(value)) : "Rolling / TBD";
 const titleCase = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
+const heroSearches = ["Small business", "Nonprofits", "Education", "Agriculture", "Arts", "Housing", "Health", "Tribal programs", "Climate", "Community development"];
 
 type Filters = {
   status: string;
@@ -83,13 +90,42 @@ function registryUrl(query: string, filters: Filters, includeResults = true) {
   return `/search${params.size ? `?${params}` : ""}${includeResults ? "#results" : ""}`;
 }
 
+function criteriaFilters(criteria: SearchCriteria): Filters {
+  const q = criteria.q || "";
+  return {
+    ...initialFilters,
+    status: criteria.status || "",
+    agency: criteria.agency || "",
+    fundingCategory: criteria.fundingCategory || "",
+    fundingInstrument: criteria.fundingInstrument || "",
+    eligibleApplicant: criteria.eligibleApplicant || "",
+    minAward: criteria.minAward || "",
+    deadlineDays: criteria.deadlineDays || "",
+    hasFundingAmount: Boolean(criteria.hasFundingAmount),
+    sort: criteria.sort || (q ? "relevance-desc" : "posted-date-desc")
+  };
+}
+
 function GrantCard({ grant, index, onSelect }: { grant: Grant; index: number; onSelect: (id: string) => void }) {
   const id = grant.key.replace(/^opportunity:/, "");
   const category = grant.fundingActivityCategories?.[0] || grant.themes?.[0];
+  const { account, toggleFavorite } = useAuth();
+  const favorite = account?.favoriteKeys.includes(grant.key) || false;
+
+  function saveOpportunity() {
+    if (!account) {
+      const returnPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+      window.location.assign(`/account?return=${encodeURIComponent(returnPath)}`);
+      return;
+    }
+    void toggleFavorite(grant.key);
+  }
+
   return (
     <article className="grant-card" style={{ "--delay": `${Math.min(index, 8) * 45}ms` } as React.CSSProperties}>
       <div className="card-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</div>
       <div className="card-content">
+        <button className={`card-favorite${favorite ? " active" : ""}`} type="button" onClick={saveOpportunity} aria-pressed={favorite} aria-label={favorite ? `Remove ${grant.title} from favorites` : `Save ${grant.title} to favorites`}>{favorite ? <BookmarkCheck size={17}/> : <Bookmark size={17}/>}</button>
         <div className="card-classification">
           <span className={`status-badge ${grant.status}`}>{titleCase(grant.status)}</span>
           <span>{grant.opportunityNumber || "Federal opportunity"}</span>
@@ -221,6 +257,7 @@ function CustomDropdown({ label, value, options, icon, onChange }: {
 export default function App({ onSelectOpportunity, page: view = "home" }: { onSelectOpportunity: (id: string) => void; page?: "home" | "search" }) {
   const initialQuery = new URLSearchParams(window.location.search).get("q") || "";
   const isSearchPage = view === "search";
+  const { account, recordSearch, saveSearch } = useAuth();
   const [query, setQuery] = useState(initialQuery);
   const [submittedQuery, setSubmittedQuery] = useState(initialQuery);
   const [filters, setFilters] = useState<Filters>(filtersFromUrl);
@@ -228,6 +265,11 @@ export default function App({ onSelectOpportunity, page: view = "home" }: { onSe
   const [result, setResult] = useState<GrantResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showSearchLibrary, setShowSearchLibrary] = useState(false);
+  const [showSaveSearch, setShowSaveSearch] = useState(false);
+  const [saveName, setSaveName] = useState("");
+  const [searchToolMessage, setSearchToolMessage] = useState("");
+  const recordedSearchRef = useRef("");
 
   useEffect(() => {
     const controller = new AbortController();
@@ -242,9 +284,18 @@ export default function App({ onSelectOpportunity, page: view = "home" }: { onSe
     return () => controller.abort();
   }, [submittedQuery, filters, page]);
 
+  useEffect(() => {
+    const meaningful = Boolean(submittedQuery.trim()) || Object.entries(filters).some(([key, value]) => key !== "sort" && Boolean(value));
+    const signature = JSON.stringify({ q: submittedQuery, ...filters });
+    if (!result || !isSearchPage || page !== 1 || !account || !meaningful || recordedSearchRef.current === signature) return;
+    recordedSearchRef.current = signature;
+    void recordSearch({ q: submittedQuery, ...filters });
+  }, [account?.user.id, filters, isSearchPage, page, result, submittedQuery]);
+
   const activeFilterCount = useMemo(() => Object.entries(filters).filter(([key, value]) => key !== "sort" && Boolean(value)).length, [filters]);
   const agencies = result?.meta.facets?.agencies.length || 0;
   const total = result?.pagination.total ?? 0;
+  const currentCriteria: SearchCriteria = { q: submittedQuery, ...filters };
 
   useEffect(() => {
     if (isSearchPage) searchSeo(total || undefined);
@@ -277,6 +328,33 @@ export default function App({ onSelectOpportunity, page: view = "home" }: { onSe
     if (isSearchPage) window.history.replaceState({}, "", "/search");
   }
 
+  function runCriteria(criteria: SearchCriteria) {
+    const nextQuery = criteria.q || "";
+    const nextFilters = criteriaFilters(criteria);
+    setQuery(nextQuery);
+    setSubmittedQuery(nextQuery);
+    setFilters(nextFilters);
+    setPage(1);
+    setShowSearchLibrary(false);
+    window.history.replaceState({}, "", registryUrl(nextQuery, nextFilters));
+  }
+
+  async function saveCurrentSearch() {
+    if (!account) {
+      window.location.assign(`/account?return=${encodeURIComponent(registryUrl(submittedQuery, filters))}`);
+      return;
+    }
+    const name = saveName.trim() || submittedQuery.trim() || criteriaSummary(currentCriteria);
+    try {
+      await saveSearch(name, currentCriteria);
+      setSaveName("");
+      setShowSaveSearch(false);
+      setSearchToolMessage("Search criteria saved to your funding desk.");
+    } catch (caught) {
+      setSearchToolMessage(caught instanceof Error ? caught.message : "Unable to save this search.");
+    }
+  }
+
   return (
     <div className="page-shell">
       <SiteHeader />
@@ -293,7 +371,7 @@ export default function App({ onSelectOpportunity, page: view = "home" }: { onSe
               <a className="text-action" href="/developers">Build with the grants API <ArrowUpRight size={15} /></a>
             </div>
             <div className="mission-tags" aria-label="Funding sectors in the catalog">
-              <span>Small business</span><span>Nonprofits</span><span>Education</span><span>Agriculture</span><span>Arts</span><span>Housing</span><span>Health</span><span>Tribal programs</span><span>Climate</span><span>Community development</span>
+              {heroSearches.map((category) => <a href={`/search?q=${encodeURIComponent(category)}#results`} key={category}>{category}<ArrowUpRight size={11}/></a>)}
             </div>
           </div>
           <figure className="hero-visual">
@@ -332,6 +410,21 @@ export default function App({ onSelectOpportunity, page: view = "home" }: { onSe
                 <span><SlidersHorizontal size={15}/> Narrow the field {activeFilterCount ? <b>{activeFilterCount}</b> : null}</span>
                 <button type="button" onClick={clearFilters}><RotateCcw size={13}/> Clear all</button>
               </div>
+              {isSearchPage ? <div className="search-library-toolbar">
+                <button type="button" className={showSearchLibrary ? "active" : ""} onClick={() => { setShowSearchLibrary((value) => !value); setShowSaveSearch(false); }}><History size={15}/> Previous searches{account?.searchHistory.length ? <b>{account.searchHistory.length}</b> : null}</button>
+                <button type="button" className={showSaveSearch ? "active" : ""} onClick={() => { if (!account) { window.location.assign(`/account?return=${encodeURIComponent(registryUrl(submittedQuery, filters))}`); return; } setShowSaveSearch((value) => !value); setShowSearchLibrary(false); }}><Save size={15}/> Save this search</button>
+                {!account ? <a href={`/account?return=${encodeURIComponent(registryUrl(submittedQuery, filters))}`}>Sign in to sync favorites and searches <ArrowUpRight size={13}/></a> : <span>Syncing with {account.user.name || account.user.email}</span>}
+              </div> : null}
+              {isSearchPage && showSaveSearch ? <div className="save-search-station">
+                <label><span>Name these criteria</span><input value={saveName} onChange={(event) => setSaveName(event.target.value)} maxLength={80} placeholder={submittedQuery || "e.g. Open education grants"} autoFocus/></label>
+                <button type="button" onClick={() => void saveCurrentSearch()}>Save to my desk <Bookmark size={15}/></button>
+              </div> : null}
+              {isSearchPage && showSearchLibrary ? <div className="search-library-drawer">
+                <div><span>Saved searches</span><strong>{account?.savedSearches.length || 0}</strong></div>
+                {account?.savedSearches.length ? account.savedSearches.slice(0, 6).map((saved) => <button type="button" onClick={() => runCriteria(saved.criteria)} key={saved.id}><Save size={14}/><span><strong>{saved.name}</strong><small>{criteriaSummary(saved.criteria)}</small></span><ArrowUpRight size={13}/></button>) : <p>{account ? "No saved searches yet. Preserve the current criteria to build your funding watchlist." : "Sign in to see saved and previous searches on every device."}</p>}
+                {account?.searchHistory.length ? <><div><span>Recent searches</span><strong>{account.searchHistory.length}</strong></div>{account.searchHistory.slice(0, 6).map((history) => <button type="button" onClick={() => runCriteria(history.criteria)} key={history.id}><History size={14}/><span><strong>{history.label}</strong><small>{criteriaSummary(history.criteria)}</small></span><ArrowUpRight size={13}/></button>)}</> : null}
+              </div> : null}
+              {searchToolMessage ? <div className="search-tool-message" role="status">{searchToolMessage}</div> : null}
               <div className="filter-grid">
                 <CustomDropdown label="Status" value={filters.status} onChange={(value) => updateFilter("status", value)} options={[{ value: "", label: "Open + forecasted" }, { value: "open", label: "Open now" }, { value: "forecasted", label: "Forecasted" }]}/>
                 <CustomDropdown label="Funding purpose" value={filters.fundingCategory} onChange={(value) => updateFilter("fundingCategory", value)} options={facetOptions("Every category", result?.meta.facets?.fundingCategories, filters.fundingCategory)}/>

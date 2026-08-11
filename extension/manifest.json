@@ -1,13 +1,11 @@
 {
   "manifest_version": 3,
   "name": "Grant Grinder",
-  "version": "0.1.0",
-  "description": "Find current official-source U.S. government grants from any page.",
+  "version": "0.2.0",
+  "description": "Open the Grant Grinder funding search and search selected text from any page.",
   "homepage_url": "https://labs.wiplash.ai/grants",
   "permissions": ["storage", "contextMenus"],
-  "host_permissions": ["https://labs.wiplash.ai/grants/api/*", "http://localhost:8791/*"],
-  "optional_host_permissions": ["https://*/*"],
   "background": { "service_worker": "background.js" },
-  "action": { "default_title": "Search government grants", "default_popup": "popup.html" },
+  "action": { "default_title": "Open Grant Grinder search" },
   "options_page": "options.html"
 }

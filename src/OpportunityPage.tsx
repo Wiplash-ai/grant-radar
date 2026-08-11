@@ -3,6 +3,8 @@ import ReactMarkdown from "react-markdown";
 import {
   ArrowLeft,
   ArrowUpRight,
+  Bookmark,
+  BookmarkCheck,
   Building2,
   CalendarClock,
   CheckCircle2,
@@ -20,6 +22,7 @@ import {
 } from "lucide-react";
 
 import { getGrant } from "./api";
+import { useAuth } from "./AuthContext";
 import { opportunitySeo } from "./seo";
 import { SiteFooter, SiteHeader } from "./SiteChrome";
 import type { GrantDetail } from "./types";
@@ -42,6 +45,7 @@ function InfoRow({ label, value }: { label: string; value?: string }) {
 }
 
 export default function OpportunityPage({ id, onBack }: { id: string; onBack: () => void }) {
+  const { account, toggleFavorite } = useAuth();
   const [grant, setGrant] = useState<GrantDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -85,6 +89,16 @@ export default function OpportunityPage({ id, onBack }: { id: string; onBack: ()
     details?.grantorContactDescription || ""
   ).replace(/^\s*phone\s*[:.-]?\s*$/i, "").trim();
   const expectedAwards = grant.expectedAwardsLabel || grant.expectedAwards;
+  const grantKey = grant.key;
+  const favorite = account?.favoriteKeys.includes(grantKey) || false;
+
+  function saveOpportunity() {
+    if (!account) {
+      window.location.assign(`/account?return=${encodeURIComponent(window.location.pathname)}`);
+      return;
+    }
+    void toggleFavorite(grantKey);
+  }
 
   return (
     <div className="page-shell">
@@ -102,6 +116,7 @@ export default function OpportunityPage({ id, onBack }: { id: string; onBack: ()
             <p><Building2 size={17}/>{grant.agency}</p>
             <div className="detail-actions">
               <a className="primary-action signal" href={officialDestination} target="_blank" rel="noreferrer">Review official notice <ArrowUpRight size={16}/></a>
+              <button className={`favorite-action${favorite ? " active" : ""}`} type="button" onClick={saveOpportunity} aria-pressed={favorite}>{favorite ? <BookmarkCheck size={16}/> : <Bookmark size={16}/>} {favorite ? "Saved to my desk" : "Save opportunity"}</button>
             </div>
           </div>
           <aside className="detail-glance">

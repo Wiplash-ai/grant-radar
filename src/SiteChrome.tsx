@@ -1,8 +1,10 @@
 import { ArrowDown, ArrowUpRight } from "lucide-react";
+import { useAuth } from "./AuthContext";
 
 export function SiteHeader() {
   const isHome = window.location.pathname === "/";
   const searchHref = isHome ? "/#search" : "/search";
+  const { account, loading } = useAuth();
   return (
     <>
       <div className="utility-bar">
@@ -19,6 +21,7 @@ export function SiteHeader() {
           <a href={searchHref}>Find funding</a>
           <a href="/developers">Developers</a>
           <a href="https://github.com/Wiplash-ai/grant-radar">Get the extension</a>
+          <a className="account-nav-link" href="/account">{loading ? "Account" : account ? "My desk" : "Sign in"}</a>
         </nav>
         <a className="header-cta" href={searchHref}>Search the registry {isHome ? <ArrowDown size={14} /> : <ArrowUpRight size={14} />}</a>
       </header>

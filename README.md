@@ -12,7 +12,7 @@ npm run dev
 
 Set `VITE_GRANTS_API_URL` to the API origin. Do not embed a paid customer credential in a public web build; use a public free tier or a same-origin server proxy in production.
 
-The home page introduces the product and includes an embedded search desk. `/search` is the dedicated filtering and results workspace. Search results open a Wiplash-designed opportunity briefing at `/opportunity/:id`, presenting a derived Markdown reader view alongside the official text, extracted applicant groups, clarified funding terms, dial-ready contacts, raw normalized JSON, documents, and source links supplied by the private API.
+The home page introduces the product and includes an embedded search desk. `/search` is the dedicated filtering and results workspace. `/account` provides registration, secure sessions, favorites, saved searches, and previous searches. Search results open a Wiplash-designed opportunity briefing at `/opportunity/:id`, presenting a derived Markdown reader view alongside the official text, extracted applicant groups, clarified funding terms, dial-ready contacts, documents, and source links supplied by the private API.
 
 The build pre-renders the search workspace, every actionable opportunity route, the developer documentation, and the privacy policy. Refresh the checked-in SEO catalog from a running API before a release:
 
@@ -27,11 +27,11 @@ Public integration resources are available at `/search`, `/developers`, `/skills
 
 Load `extension/` as an unpacked extension in Chrome, Edge, Brave, or another Chromium browser. The extension provides:
 
-- popup grant search;
-- open/forecasted filtering;
-- official-notice links;
+- toolbar launch into the complete `/search` web app;
+- access to the same signed-in favorites and saved-search experience as the website;
 - a selection context menu that searches highlighted page text;
-- configurable API origin and key storage.
+- a configurable search-app URL for official, local, or self-hosted use;
+- no host permissions, content scripts, or stored API keys.
 
 Package it with:
 

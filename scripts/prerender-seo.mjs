@@ -86,6 +86,16 @@ for (const page of staticRoutes) {
   }));
 }
 
+const accountUrl = `${siteBase}/account`;
+const accountHtml = replaceMeta(shell, {
+  title: "Sign in or register | Grant Grinder",
+  description: "Access your private Grant Grinder funding desk for favorite opportunities, saved search criteria, and previous searches.",
+  url: accountUrl,
+  structuredData: { "@context": "https://schema.org", "@type": "WebPage", name: "Grant Grinder funding desk", url: accountUrl },
+  fallback: "<main class=\"seo-fallback\"><h1>Your Grant Grinder funding desk</h1><p>Sign in to manage favorite opportunities and saved searches.</p></main>"
+}).replace(/<meta name="robots" content="[^"]*"\s*\/>/, '<meta name="robots" content="noindex,nofollow" />');
+await writeRoute("/account", accountHtml);
+
 const urls = [
   { loc: siteBase, lastmod: catalog.generatedAt },
   ...staticRoutes.map((page) => ({ loc: `${siteBase}${page.route}`, lastmod: catalog.generatedAt })),
@@ -93,4 +103,4 @@ const urls = [
 ];
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(({ loc, lastmod }) => `  <url><loc>${escapeHtml(loc)}</loc><lastmod>${String(lastmod).slice(0,10)}</lastmod></url>`).join("\n")}\n</urlset>\n`;
 await writeFile(path.join(distDir, "sitemap.xml"), sitemap);
-console.log(`Pre-rendered ${catalog.grants.length} opportunity pages and ${staticRoutes.length} public information pages.`);
+console.log(`Pre-rendered ${catalog.grants.length} opportunity pages, ${staticRoutes.length} public information pages, and the private account shell.`);

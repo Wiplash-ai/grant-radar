@@ -6,9 +6,11 @@ This is an internal launch checklist, not legal advice.
 
 | Data | Collection | Purpose | Storage or processor | Current retention |
 | --- | --- | --- | --- | --- |
-| Search terms and filters | User submits a website, extension, or API query | Return grant matches | Processed in transit by the API; no separate product search-history database | Request/log retention depends on hosting configuration |
-| Extension API URL and optional API key | User enters extension settings | Connect to the selected API | Browser sync storage | Until changed, cleared, or extension removal |
-| Selected page phrase | User explicitly invokes context-menu search | Populate one grant query | Browser session storage and API request | Removed after use or browser session cleanup |
+| Search terms and filters | User submits a website, extension, or API query | Return grant matches; provide previous searches for signed-in users | Processed by the API and stored in the signed-in funding desk | Until removed or account deletion; cap is 25 recent searches |
+| Funding-desk account | User registers | Authentication and cross-device sync | Private API account store; passwords are scrypt-hashed and sessions are HTTP-only cookies | Until account deletion and required security retention |
+| Favorites and saved searches | Signed-in user deliberately saves an item | Funding watchlist and reusable search criteria | Private API account store | Until item or account deletion |
+| Extension search-app URL | User changes extension settings | Open official, local, or self-hosted search app | Browser sync storage | Until changed, cleared, or extension removal |
+| Selected page phrase | User explicitly invokes context-menu search | Populate one grant query | Search URL and API request | Browser history may retain the opened URL according to browser settings |
 | API key and usage | Wiplash.ai or marketplace issues access | Authentication, metering, abuse prevention, billing | API configuration and marketplace systems | While active and as required for security, billing, and disputes |
 | Subscriber/account identifiers | API marketplace or direct customer | Entitlement and support | Marketplace and Wiplash.ai systems | Per final marketplace and account-retention configuration |
 | IP, user-agent, endpoint, timestamp, response status | Hosting and security infrastructure | Delivery, security, reliability | Hosting/reverse-proxy logs | Not yet documented as a fixed schedule |
@@ -31,7 +33,9 @@ This is an internal launch checklist, not legal advice.
 - [x] Website works without an account.
 - [x] Extension permissions are limited to storage and context-menu behavior.
 - [x] Extension does not inject content scripts.
-- [x] API keys are optional in extension storage and are sent in headers, not URLs.
+- [x] Extension stores no API key and requests no host access.
+- [x] Account sessions use HTTP-only same-site cookies and passwords are stored only as scrypt hashes.
 - [x] Public policy states that Grant Grinder is not a government service.
 - [x] Public policy links are present in site navigation.
 - [ ] Browser store and each API marketplace listing point to the deployed `/privacy` URL.
+- [ ] Add and test account deletion, password recovery, and email verification before general account availability.

@@ -90,3 +90,26 @@ export type GrantResponse = {
 };
 
 export type GrantDetailResponse = { data: GrantDetail; meta: { generated_at: string } };
+
+export type SearchCriteria = {
+  q?: string;
+  status?: string;
+  agency?: string;
+  fundingCategory?: string;
+  fundingInstrument?: string;
+  eligibleApplicant?: string;
+  minAward?: string;
+  deadlineDays?: string;
+  hasFundingAmount?: boolean;
+  sort?: string;
+};
+
+export type SavedSearch = { id: string; name: string; criteria: SearchCriteria; createdAt: string; updatedAt: string };
+export type SearchHistoryEntry = { id: string; label: string; criteria: SearchCriteria; searchedAt: string };
+export type AccountSnapshot = {
+  user: { id: string; email: string; name?: string; createdAt: string };
+  favoriteKeys: string[];
+  savedSearches: SavedSearch[];
+  searchHistory: SearchHistoryEntry[];
+};
+export type AccountLibrary = AccountSnapshot & { favorites: Grant[] };

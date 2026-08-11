@@ -1,6 +1,8 @@
 import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
+import AccountPage from "./AccountPage";
 import App from "./App";
+import { AuthProvider } from "./AuthContext";
 import OpportunityPage from "./OpportunityPage";
 import { DeveloperPage, PrivacyPage } from "./StaticPages";
 import "./styles.css";
@@ -35,9 +37,10 @@ function Root() {
 
   if (opportunityId) return <OpportunityPage id={opportunityId} onBack={returnToRegistry} />;
   if (/^\/search\/?$/.test(pathname)) return <App page="search" onSelectOpportunity={openOpportunity} />;
+  if (/^\/account\/?$/.test(pathname)) return <AccountPage />;
   if (/^\/developers\/?$/.test(pathname)) return <DeveloperPage />;
   if (/^\/privacy\/?$/.test(pathname)) return <PrivacyPage />;
   return <App onSelectOpportunity={openOpportunity} />;
 }
 
-createRoot(document.getElementById("root")!).render(<StrictMode><Root /></StrictMode>);
+createRoot(document.getElementById("root")!).render(<StrictMode><AuthProvider><Root /></AuthProvider></StrictMode>);
