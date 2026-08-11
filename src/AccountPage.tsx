@@ -3,6 +3,7 @@ import { ArrowUpRight, Bookmark, CalendarClock, History, KeyRound, LogOut, Radar
 
 import { getAccountLibrary } from "./account-api";
 import { useAuth } from "./AuthContext";
+import RadarLoader from "./RadarLoader";
 import { criteriaSummary, searchCriteriaUrl } from "./search-links";
 import { SiteFooter, SiteHeader } from "./SiteChrome";
 import type { AccountLibrary } from "./types";
@@ -51,7 +52,7 @@ export default function AccountPage() {
     }
   }
 
-  if (loading) return <div className="page-shell"><SiteHeader/><main className="account-loading"><span className="pulse"/>Checking your funding desk…</main><SiteFooter/></div>;
+  if (loading) return <div className="page-shell"><SiteHeader/><main className="account-loading" role="status"><RadarLoader compact/>Checking your funding desk…</main><SiteFooter/></div>;
 
   if (!account) return <div className="page-shell">
     <SiteHeader/>

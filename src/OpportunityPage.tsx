@@ -23,6 +23,7 @@ import {
 
 import { getGrant } from "./api";
 import { useAuth } from "./AuthContext";
+import RadarLoader from "./RadarLoader";
 import { opportunitySeo } from "./seo";
 import { SiteFooter, SiteHeader } from "./SiteChrome";
 import type { GrantDetail } from "./types";
@@ -73,7 +74,7 @@ export default function OpportunityPage({ id, onBack }: { id: string; onBack: ()
   if (!grant) {
     return <div className="page-shell"><SiteHeader />
       <main className="opportunity-state">
-        {loading ? <><span className="pulse"/><strong>Retrieving opportunity briefing…</strong></> : <><strong>Briefing unavailable.</strong><span>{error}</span><button onClick={onBack}>Return to the registry</button></>}
+        {loading ? <><RadarLoader/><strong>Retrieving opportunity briefing…</strong></> : <><strong>Briefing unavailable.</strong><span>{error}</span><button onClick={onBack}>Return to the registry</button></>}
       </main><SiteFooter /></div>;
   }
 

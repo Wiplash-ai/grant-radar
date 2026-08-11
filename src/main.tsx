@@ -7,8 +7,22 @@ import OpportunityPage from "./OpportunityPage";
 import { DeveloperPage, PrivacyPage } from "./StaticPages";
 import "./styles.css";
 
+const SEARCH_RETURN_KEY = "grant-grinder.search-return-url";
+
 function routeId() {
   return decodeURIComponent(window.location.pathname.match(/^\/opportunity\/([^/]+)\/?$/)?.[1] || "");
+}
+
+function currentRouteUrl() {
+  return `${window.location.pathname}${window.location.search}${window.location.hash}`;
+}
+
+function rememberSearchReturn(url: string) {
+  try { window.sessionStorage.setItem(SEARCH_RETURN_KEY, url); } catch { /* Storage can be unavailable in hardened browsers. */ }
+}
+
+function rememberedSearchReturn() {
+  try { return window.sessionStorage.getItem(SEARCH_RETURN_KEY) || ""; } catch { return ""; }
 }
 
 function Root() {
@@ -22,16 +36,24 @@ function Root() {
   }, []);
 
   function openOpportunity(id: string) {
-    window.history.pushState({}, "", `/opportunity/${encodeURIComponent(id)}`);
+    const returnUrl = currentRouteUrl();
+    rememberSearchReturn(returnUrl);
+    window.history.pushState({ grantReturnUrl: returnUrl }, "", `/opportunity/${encodeURIComponent(id)}`);
     setOpportunityId(id);
     setPathname(window.location.pathname);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function returnToRegistry() {
-    window.history.pushState({}, "", "/search#results");
+    const state = window.history.state as { grantReturnUrl?: unknown } | null;
+    if (typeof state?.grantReturnUrl === "string" && state.grantReturnUrl.startsWith("/")) {
+      window.history.back();
+      return;
+    }
+    const returnUrl = rememberedSearchReturn() || "/search#results";
+    window.history.pushState({}, "", returnUrl);
     setOpportunityId("");
-    setPathname("/search");
+    setPathname(window.location.pathname);
     requestAnimationFrame(() => document.querySelector("#results")?.scrollIntoView({ behavior: "smooth" }));
   }
 

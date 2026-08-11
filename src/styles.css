@@ -130,8 +130,16 @@ a { transition: color .18s ease, background-color .18s ease, border-color .18s e
 .state { display: flex; max-width: 1450px; min-height: 260px; align-items: center; justify-content: center; gap: 12px; margin: auto; flex-direction: column; color: #566051; background: rgba(244,240,229,.65); border: 1px solid var(--line); }
 .state strong { color: var(--ink); font: 700 38px "Barlow Condensed",sans-serif; text-transform: uppercase; }
 .state button { padding: 5px; color: var(--ink); background: transparent; border: 0; border-bottom: 1px solid; cursor: pointer; }
-.pulse { width: 10px; height: 10px; background: var(--rust); animation: pulse 1s infinite alternate; }
-@keyframes pulse { to { opacity: .25; transform: scale(.7); } }
+.radar-loader { --radar-size: 78px; position: relative; display: block; width: var(--radar-size); height: var(--radar-size); flex: 0 0 auto; overflow: hidden; border: 2px solid #566548; border-radius: 50%; background-color: #1b2418; background-image: linear-gradient(transparent calc(50% - .5px),rgba(217,228,93,.24) 50%,transparent calc(50% + .5px)),linear-gradient(90deg,transparent calc(50% - .5px),rgba(217,228,93,.24) 50%,transparent calc(50% + .5px)),repeating-radial-gradient(circle,transparent 0 16%,rgba(217,228,93,.19) 17% 18%,transparent 19% 32%); box-shadow: 0 0 0 4px rgba(62,75,53,.12),inset 0 0 22px rgba(217,228,93,.08); }
+.radar-loader::before { content: ""; position: absolute; inset: -2px; border-radius: 50%; background: conic-gradient(from -22deg,transparent 0 300deg,rgba(217,228,93,.04) 316deg,rgba(217,228,93,.58) 359deg,transparent 360deg); animation: radar-scan 1.65s linear infinite; }
+.radar-loader::after { content: ""; position: absolute; left: 50%; top: 50%; width: 5px; height: 5px; border-radius: 50%; background: var(--signal); box-shadow: 0 0 8px rgba(217,228,93,.8); transform: translate(-50%,-50%); }
+.radar-loader-compact { --radar-size: 54px; }
+.radar-contact { position: absolute; z-index: 2; width: 5px; height: 5px; border: 1px solid var(--signal); border-radius: 50%; background: rgba(217,228,93,.75); box-shadow: 0 0 7px rgba(217,228,93,.9); animation: radar-contact 1.65s ease-out infinite; }
+.radar-contact-alpha { left: 24%; top: 31%; animation-delay: .15s; }
+.radar-contact-bravo { right: 21%; top: 43%; animation-delay: .75s; }
+.radar-contact-charlie { left: 42%; bottom: 19%; animation-delay: 1.15s; }
+@keyframes radar-scan { to { transform: rotate(1turn); } }
+@keyframes radar-contact { 0%,24%,100% { opacity: .18; transform: scale(.65); } 35%,62% { opacity: 1; transform: scale(1); } }
 
 .opportunity-page { background-color: var(--parchment); background-image: linear-gradient(rgba(27,33,25,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(27,33,25,.035) 1px,transparent 1px); background-size: 40px 40px; }
 .detail-breadcrumb { min-height: 54px; padding: 0 clamp(20px,5vw,76px); display: flex; align-items: center; gap: 10px; color: #6a7265; background: var(--paper); border-bottom: 1px solid var(--line); font: 500 9px "DM Mono",monospace; letter-spacing: .07em; text-transform: uppercase; }

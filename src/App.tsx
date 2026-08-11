@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { searchGrants } from "./api";
 import { useAuth } from "./AuthContext";
+import RadarLoader from "./RadarLoader";
 import { criteriaSummary } from "./search-links";
 import { homeSeo, searchSeo } from "./seo";
 import { SiteFooter, SiteHeader } from "./SiteChrome";
@@ -448,7 +449,7 @@ export default function App({ onSelectOpportunity, page: view = "home" }: { onSe
           </div>
           <div className="registry-note"><ShieldCheck size={16} /><span>We reorganize official public data for faster decisions. The linked government notice controls eligibility, dates, and application requirements.</span></div>
           {error ? <div className="state error"><strong>The registry is unavailable.</strong><span>{error}</span><button onClick={() => setSubmittedQuery((value) => value)}>Try again</button></div> : null}
-          {loading ? <div className="state"><span className="pulse"/>Scanning the federal catalog…</div> : null}
+          {loading ? <div className="state" role="status"><RadarLoader/>Scanning the federal catalog…</div> : null}
           {!loading && !error && result?.data.length === 0 ? <div className="state"><strong>No opportunity matched.</strong><span>Remove a filter or try a broader description of the people or work you need to fund.</span><button onClick={clearFilters}>Reset the search</button></div> : null}
           {!loading && !error ? <div className="results-list">{result?.data.map((grant, index) => <GrantCard key={grant.key} grant={grant} index={index} onSelect={onSelectOpportunity}/>)}</div> : null}
           {result && result.pagination.pages > 1 ? <div className="pagination"><button disabled={page <= 1} onClick={() => { setPage((value) => value - 1); document.querySelector("#results")?.scrollIntoView({ behavior: "smooth" }); }}><ChevronLeft size={16}/>Previous</button><span>Page {page} / {result.pagination.pages}</span><button disabled={page >= result.pagination.pages} onClick={() => { setPage((value) => value + 1); document.querySelector("#results")?.scrollIntoView({ behavior: "smooth" }); }}>Next<ChevronRight size={16}/></button></div> : null}
