@@ -26,6 +26,7 @@ import { useAuth } from "./AuthContext";
 import RadarLoader from "./RadarLoader";
 import { criteriaSummary } from "./search-links";
 import { homeSeo, searchSeo } from "./seo";
+import { appPath } from "./routes";
 import { SiteFooter, SiteHeader } from "./SiteChrome";
 import type { Grant, GrantFacetItem, GrantResponse, SearchCriteria } from "./types";
 
@@ -88,7 +89,7 @@ function registryUrl(query: string, filters: Filters, includeResults = true) {
   if (filters.hasFundingAmount) params.set("has_funding_amount", "true");
   const defaultSort = query.trim() ? "relevance-desc" : "posted-date-desc";
   if (filters.sort !== defaultSort) params.set("sort", filters.sort);
-  return `/search${params.size ? `?${params}` : ""}${includeResults ? "#results" : ""}`;
+  return appPath(`/search${params.size ? `?${params}` : ""}${includeResults ? "#results" : ""}`);
 }
 
 function criteriaFilters(criteria: SearchCriteria): Filters {
@@ -116,7 +117,7 @@ function GrantCard({ grant, index, onSelect }: { grant: Grant; index: number; on
   function saveOpportunity() {
     if (!account) {
       const returnPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-      window.location.assign(`/account?return=${encodeURIComponent(returnPath)}`);
+      window.location.assign(appPath(`/account?return=${encodeURIComponent(returnPath)}`));
       return;
     }
     void toggleFavorite(grant.key);
@@ -146,7 +147,7 @@ function GrantCard({ grant, index, onSelect }: { grant: Grant; index: number; on
           <div><dt><CircleDollarSign size={14} /> Available funding</dt><dd>{grant.awardCeilingLabel || formatMoney(grant.programFundingUsd || grant.awardCeilingUsd)}</dd></div>
           <div><dt><Compass size={14} /> Record signal</dt><dd>{grant.fitScore}/100</dd></div>
         </dl>
-        <a href={`/opportunity/${id}`} onClick={(event) => { event.preventDefault(); onSelect(id); }}>Open the funding briefing <ArrowUpRight size={16} /></a>
+        <a href={appPath(`/opportunity/${id}`)} onClick={(event) => { event.preventDefault(); onSelect(id); }}>Open the funding briefing <ArrowUpRight size={16} /></a>
       </aside>
     </article>
   );
@@ -326,7 +327,7 @@ export default function App({ onSelectOpportunity, page: view = "home" }: { onSe
     setSubmittedQuery("");
     setFilters(initialFilters);
     setPage(1);
-    if (isSearchPage) window.history.replaceState({}, "", "/search");
+    if (isSearchPage) window.history.replaceState({}, "", appPath("/search"));
   }
 
   function runCriteria(criteria: SearchCriteria) {
@@ -342,7 +343,7 @@ export default function App({ onSelectOpportunity, page: view = "home" }: { onSe
 
   async function saveCurrentSearch() {
     if (!account) {
-      window.location.assign(`/account?return=${encodeURIComponent(registryUrl(submittedQuery, filters))}`);
+      window.location.assign(appPath(`/account?return=${encodeURIComponent(registryUrl(submittedQuery, filters))}`));
       return;
     }
     const name = saveName.trim() || submittedQuery.trim() || criteriaSummary(currentCriteria);
@@ -369,14 +370,14 @@ export default function App({ onSelectOpportunity, page: view = "home" }: { onSe
             <p>Your nonprofit, school, business, tribe, city, research team, or community project deserves a fair shot. Find the federal opportunities that fit your work before the deadline passes.</p>
             <div className="hero-actions">
               <a className="primary-action" href="#search">Find funding for your work <ArrowDown size={16} /></a>
-              <a className="text-action" href="/developers">Build with the grants API <ArrowUpRight size={15} /></a>
+              <a className="text-action" href={appPath("/developers")}>Build with the grants API <ArrowUpRight size={15} /></a>
             </div>
             <div className="mission-tags" aria-label="Funding sectors in the catalog">
-              {heroSearches.map((category) => <a href={`/search?q=${encodeURIComponent(category)}#results`} key={category}>{category}<ArrowUpRight size={11}/></a>)}
+              {heroSearches.map((category) => <a href={appPath(`/search?q=${encodeURIComponent(category)}#results`)} key={category}>{category}<ArrowUpRight size={11}/></a>)}
             </div>
           </div>
           <figure className="hero-visual">
-            <img src="/grant-radar-field-team-v2.webp" alt="Civil engineers reviewing infrastructure plans at a reservoir field site." />
+            <img src={appPath("/grant-radar-field-team-v2.webp")} alt="Civil engineers reviewing infrastructure plans at a reservoir field site." />
             <div className="image-grid" aria-hidden="true" />
             <figcaption>
               <span>Funding belongs in the field</span>
@@ -413,8 +414,8 @@ export default function App({ onSelectOpportunity, page: view = "home" }: { onSe
               </div>
               {isSearchPage ? <div className="search-library-toolbar">
                 <button type="button" className={showSearchLibrary ? "active" : ""} onClick={() => { setShowSearchLibrary((value) => !value); setShowSaveSearch(false); }}><History size={15}/> Previous searches{account?.searchHistory.length ? <b>{account.searchHistory.length}</b> : null}</button>
-                <button type="button" className={showSaveSearch ? "active" : ""} onClick={() => { if (!account) { window.location.assign(`/account?return=${encodeURIComponent(registryUrl(submittedQuery, filters))}`); return; } setShowSaveSearch((value) => !value); setShowSearchLibrary(false); }}><Save size={15}/> Save this search</button>
-                {!account ? <a href={`/account?return=${encodeURIComponent(registryUrl(submittedQuery, filters))}`}>Sign in to sync favorites and searches <ArrowUpRight size={13}/></a> : <span>Syncing with {account.user.name || account.user.email}</span>}
+                <button type="button" className={showSaveSearch ? "active" : ""} onClick={() => { if (!account) { window.location.assign(appPath(`/account?return=${encodeURIComponent(registryUrl(submittedQuery, filters))}`)); return; } setShowSaveSearch((value) => !value); setShowSearchLibrary(false); }}><Save size={15}/> Save this search</button>
+                {!account ? <a href={appPath(`/account?return=${encodeURIComponent(registryUrl(submittedQuery, filters))}`)}>Sign in to sync favorites and searches <ArrowUpRight size={13}/></a> : <span>Syncing with {account.user.name || account.user.email}</span>}
               </div> : null}
               {isSearchPage && showSaveSearch ? <div className="save-search-station">
                 <label><span>Name these criteria</span><input value={saveName} onChange={(event) => setSaveName(event.target.value)} maxLength={80} placeholder={submittedQuery || "e.g. Open education grants"} autoFocus/></label>

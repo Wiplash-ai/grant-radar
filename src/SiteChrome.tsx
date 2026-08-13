@@ -1,9 +1,10 @@
 import { ArrowDown, ArrowUpRight } from "lucide-react";
 import { useAuth } from "./AuthContext";
+import { appPath, routePath } from "./routes";
 
 export function SiteHeader() {
-  const isHome = window.location.pathname === "/";
-  const searchHref = isHome ? "/#search" : "/search";
+  const isHome = routePath() === "/";
+  const searchHref = appPath(isHome ? "/#search" : "/search");
   const { account, loading } = useAuth();
   return (
     <>
@@ -12,16 +13,16 @@ export function SiteHeader() {
         <span className="catalog-status"><i /> Official-source catalog online</span>
       </div>
       <header className="site-header">
-        <a className="brand" href="/">
-          <img src="/radar-mark.svg" alt="" />
+        <a className="brand" href={appPath("/")}>
+          <img src={appPath("/radar-mark.svg")} alt="" />
           <span><strong>Grant Grinder</strong><small>Federal Funding Desk</small></span>
         </a>
         <nav aria-label="Primary navigation">
-          <a href="/#mission">Mission</a>
+          <a href={appPath("/#mission")}>Mission</a>
           <a href={searchHref}>Find funding</a>
-          <a href="/developers">Developers</a>
+          <a href={appPath("/developers")}>Developers</a>
           <a href="https://github.com/Wiplash-ai/grant-radar">Get the extension</a>
-          <a className="account-nav-link" href="/account">{loading ? "Account" : account ? "My desk" : "Sign in"}</a>
+          <a className="account-nav-link" href={appPath("/account")}>{loading ? "Account" : account ? "My desk" : "Sign in"}</a>
         </nav>
         <a className="header-cta" href={searchHref}>Search the registry {isHome ? <ArrowDown size={14} /> : <ArrowUpRight size={14} />}</a>
       </header>
@@ -35,9 +36,9 @@ export function SiteFooter() {
       <a className="labs-link" href="https://labs.wiplash.ai/">Wiplash Labs</a>
       <p>Produced by <a href="https://wiplash.ai/">Wiplash.ai</a></p>
       <nav aria-label="Footer navigation">
-        <a href="/search">Grant search</a>
-        <a href="/developers">API docs</a>
-        <a href="/privacy">Privacy</a>
+        <a href={appPath("/search")}>Grant search</a>
+        <a href={appPath("/developers")}>API docs</a>
+        <a href={appPath("/privacy")}>Privacy</a>
         <a href="https://github.com/Wiplash-ai/grant-radar">GitHub <ArrowUpRight size={12}/></a>
       </nav>
     </footer>

@@ -25,21 +25,27 @@ Public integration resources are available at `/search`, `/developers`, `/skills
 
 ## Browser extension
 
-Load `extension/` as an unpacked extension in Chrome, Edge, Brave, or another Chromium browser. The extension provides:
+Load `extension/` as an unpacked extension in Chrome, Edge, Brave, Opera, or another Chromium browser. Store packaging also produces a Firefox-specific Manifest V3 bundle. The extension provides:
 
-- toolbar launch into the complete `/search` web app;
-- access to the same signed-in favorites and saved-search experience as the website;
+- a draggable, fixed-size grant-search widget on the page already being viewed;
+- one-click access to the full `/search` app in a new tab;
+- signed-in favorites and saved searches when a Grant Grinder web-app session is available;
+- similar-opportunity suggestions when opened over a Grant Grinder opportunity page;
 - a selection context menu that searches highlighted page text;
 - a configurable search-app URL for official, local, or self-hosted use;
-- no host permissions, content scripts, or stored API keys.
+- no stored API keys, analytics, ads, remote executable code, or access to arbitrary browsing history.
 
-Package it with:
+The extension requests temporary `activeTab` access only after a toolbar click so it can insert the widget into that tab. Its sole persistent host permission is the first-party `https://labs.wiplash.ai/grants/*` origin used by the public registry and, on Grant Grinder pages, the user's existing signed-in funding desk.
+
+Create review-ready Chrome, Edge, Opera, and Firefox archives with:
 
 ```bash
-npm run extension:zip
+npm run extension:stores
 ```
 
-The ZIP is written to `artifacts/grant-grinder-extension.zip`.
+The versioned archives and SHA-256 checksums are written to `artifacts/packages/`. `npm run extension:zip` remains available for the generic Chromium development ZIP.
+
+Store listing copy, permission explanations, reviewer instructions, and asset requirements are recorded in `store-assets/LISTING.md`.
 
 ## Architecture
 

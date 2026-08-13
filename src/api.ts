@@ -1,7 +1,7 @@
 import type { GrantDetailResponse, GrantResponse } from "./types";
 
 const baseUrl = (import.meta.env.VITE_GRANTS_API_URL || "https://labs.wiplash.ai/grants/api").replace(/\/$/, "");
-const apiKey = import.meta.env.VITE_GRANTS_API_KEY || "";
+const publicApiBase = `${baseUrl}/public`;
 
 export type SearchInput = {
   q: string;
@@ -33,7 +33,7 @@ export async function searchGrants(input: SearchInput, signal?: AbortSignal): Pr
     deadline.setUTCDate(deadline.getUTCDate() + Number(input.deadlineDays));
     params.set("closes_before", deadline.toISOString().slice(0, 10));
   }
-  const response = await fetch(`${baseUrl}/v1/grants?${params}`, { signal, headers: apiKey ? { "x-api-key": apiKey } : {} });
+  const response = await fetch(`${publicApiBase}/v1/grants?${params}`, { signal });
   if (!response.ok) {
     const body = await response.json().catch(() => ({}));
     throw new Error(body?.error?.message || `Grant API returned ${response.status}.`);
@@ -42,7 +42,7 @@ export async function searchGrants(input: SearchInput, signal?: AbortSignal): Pr
 }
 
 export async function getGrant(id: string, signal?: AbortSignal): Promise<GrantDetailResponse> {
-  const response = await fetch(`${baseUrl}/v1/grants/${encodeURIComponent(id)}`, { signal, headers: apiKey ? { "x-api-key": apiKey } : {} });
+  const response = await fetch(`${publicApiBase}/v1/grants/${encodeURIComponent(id)}`, { signal });
   if (!response.ok) {
     const body = await response.json().catch(() => ({}));
     throw new Error(body?.error?.message || `Grant API returned ${response.status}.`);

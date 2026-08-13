@@ -7,15 +7,15 @@
     <title>Grant Grinder extension settings</title>
   </head>
   <body>
-    <div class="utility">Wiplash Labs / Extension Configuration <span><i></i> Launcher ready</span></div>
+    <div class="utility">Wiplash Labs / Extension Configuration <span><i></i> Field widget ready</span></div>
     <main>
-      <header><span>Grant Grinder / Systems</span><h1>Use one funding desk everywhere.</h1><p>The toolbar button opens the complete Grant Grinder search app, including your signed-in favorites, saved searches, and previous searches.</p></header>
+      <header><img src="icons/icon-48.png" alt=""><span>Grant Grinder / Systems</span><h1>Keep funding intelligence beside your work.</h1><p>The toolbar button toggles a fixed-size Grant Grinder widget on the page you are using. Drag it by its header, close it when you need the space, or open the complete app in a new tab.</p></header>
       <form id="optionsForm">
-        <label><span>Grant Grinder search URL</span><input id="appUrl" type="url" required></label>
-        <p>Keep the official URL for normal use. Developers can point the extension to <code>http://localhost:5173/search</code>.</p>
-        <button>Save search app</button><span id="saved" role="status"></span>
+        <label><span>Grant Grinder web app URL</span><input id="appUrl" type="url" required></label>
+        <p>This controls where full searches and funding briefings open. Keep the official URL for normal use. Developers can use <code>http://localhost:5173/search</code>.</p>
+        <button>Save web app</button><span id="saved" role="status"></span>
       </form>
-      <section><strong>Privacy boundary</strong><p>The extension opens this URL and can pass text you explicitly select as a search query. It does not read pages, inject scripts, or store an API key.</p></section>
+      <section><strong>Privacy boundary</strong><p>The extension injects only its isolated widget after you click the toolbar button. It sends submitted searches to Grant Grinder's public endpoint and, on Grant Grinder pages, can receive your favorites and saved searches from the existing first-party session. It never receives the session cookie, reads unrelated page content, or stores an API key.</p></section>
     </main>
     <script src="options.js"></script>
   </body>

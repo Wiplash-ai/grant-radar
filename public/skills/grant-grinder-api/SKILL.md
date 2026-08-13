@@ -1,6 +1,6 @@
 ---
 name: grant-grinder-api
-description: Search and retrieve normalized current U.S. federal grant opportunities through the official paid Grant Grinder API. Use when an agent needs to find grants by mission, applicant type, agency, funding category, award amount, posting date, or deadline; compare opportunities; build funding alerts or directories; or return complete official-source grant details.
+description: Search, match, monitor, and retrieve normalized current U.S. federal grant opportunities through the official paid Grant Grinder API. Use when an agent needs to find grants by mission or applicant profile, compare opportunities, monitor catalog changes, build application-readiness checklists, create funding alerts or directories, or return complete official-source grant details.
 ---
 
 # Grant Grinder API
@@ -37,6 +37,8 @@ Never print, log, commit, place in a URL, or expose the key in browser-side code
 6. Call `GET /v1/grants/{key}` for each shortlisted record before summarizing eligibility, contacts, application instructions, or the complete mission description.
 7. Include each record's `officialUrl` in the result. State that the linked government notice controls final eligibility, dates, amendments, and submission requirements.
 
+When the caller provides a reusable organization profile, prefer `POST /v1/matches` over manually combining several searches. Use `GET /v1/changes` for alerts and synchronization instead of repeatedly downloading the full catalog. Use `GET /v1/grants/{key}/checklist` only after shortlisting an opportunity, and present it as a preparation aid rather than a determination that the user can apply.
+
 Start with a limit of 10–25 for interactive research. Use up to 100 only for exports, synchronization, or exhaustive agent workflows.
 
 ## Example
@@ -51,6 +53,15 @@ Retrieve a complete record:
 ```bash
 curl "https://labs.wiplash.ai/grants/api/v1/grants/opportunity%3A363515" \
   -H "x-api-key: $GRANT_GRINDER_API_KEY"
+```
+
+Match an organization profile:
+
+```bash
+curl -X POST "https://labs.wiplash.ai/grants/api/v1/matches" \
+  -H "content-type: application/json" \
+  -H "x-api-key: $GRANT_GRINDER_API_KEY" \
+  --data '{"keywords":["rural health","telemedicine"],"applicant_types":["Nonprofits with 501(c)(3) status"],"funding_categories":["Health"],"min_award":50000,"limit":10}'
 ```
 
 ## Result quality
@@ -69,6 +80,7 @@ curl "https://labs.wiplash.ai/grants/api/v1/grants/opportunity%3A363515" \
 - `401 invalid_api_key`: request a valid key; do not retry repeatedly.
 - `404 grant_not_found`: search by opportunity number, then retry the detail endpoint with the returned key.
 - `429`: honor `Retry-After` when present and reduce request frequency.
+- Read `X-RateLimit-Remaining` and `X-DailyLimit-Remaining` before starting a large pagination or detail-enrichment workflow.
 - `5xx`: retry once with backoff, then report the service interruption.
 
 Read [references/api.md](references/api.md) for the complete parameter, sorting, response, and pagination reference.

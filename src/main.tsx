@@ -5,12 +5,13 @@ import App from "./App";
 import { AuthProvider } from "./AuthContext";
 import OpportunityPage from "./OpportunityPage";
 import { DeveloperPage, PrivacyPage } from "./StaticPages";
+import { appPath, routePath } from "./routes";
 import "./styles.css";
 
 const SEARCH_RETURN_KEY = "grant-grinder.search-return-url";
 
 function routeId() {
-  return decodeURIComponent(window.location.pathname.match(/^\/opportunity\/([^/]+)\/?$/)?.[1] || "");
+  return decodeURIComponent(routePath().match(/^\/opportunity\/([^/]+)\/?$/)?.[1] || "");
 }
 
 function currentRouteUrl() {
@@ -27,10 +28,10 @@ function rememberedSearchReturn() {
 
 function Root() {
   const [opportunityId, setOpportunityId] = useState(routeId);
-  const [pathname, setPathname] = useState(window.location.pathname);
+  const [pathname, setPathname] = useState(routePath());
 
   useEffect(() => {
-    const handleNavigation = () => { setOpportunityId(routeId()); setPathname(window.location.pathname); };
+    const handleNavigation = () => { setOpportunityId(routeId()); setPathname(routePath()); };
     window.addEventListener("popstate", handleNavigation);
     return () => window.removeEventListener("popstate", handleNavigation);
   }, []);
@@ -38,9 +39,9 @@ function Root() {
   function openOpportunity(id: string) {
     const returnUrl = currentRouteUrl();
     rememberSearchReturn(returnUrl);
-    window.history.pushState({ grantReturnUrl: returnUrl }, "", `/opportunity/${encodeURIComponent(id)}`);
+    window.history.pushState({ grantReturnUrl: returnUrl }, "", appPath(`/opportunity/${encodeURIComponent(id)}`));
     setOpportunityId(id);
-    setPathname(window.location.pathname);
+    setPathname(routePath());
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -50,10 +51,10 @@ function Root() {
       window.history.back();
       return;
     }
-    const returnUrl = rememberedSearchReturn() || "/search#results";
+    const returnUrl = rememberedSearchReturn() || appPath("/search#results");
     window.history.pushState({}, "", returnUrl);
     setOpportunityId("");
-    setPathname(window.location.pathname);
+    setPathname(routePath());
     requestAnimationFrame(() => document.querySelector("#results")?.scrollIntoView({ behavior: "smooth" }));
   }
 

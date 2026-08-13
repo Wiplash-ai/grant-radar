@@ -4,6 +4,7 @@ import { ArrowUpRight, Bookmark, CalendarClock, History, KeyRound, LogOut, Radar
 import { getAccountLibrary } from "./account-api";
 import { useAuth } from "./AuthContext";
 import RadarLoader from "./RadarLoader";
+import { appPath } from "./routes";
 import { criteriaSummary, searchCriteriaUrl } from "./search-links";
 import { SiteFooter, SiteHeader } from "./SiteChrome";
 import type { AccountLibrary } from "./types";
@@ -87,13 +88,13 @@ export default function AccountPage() {
     <main className="account-dashboard">
       <section className="account-command-banner">
         <div><span>Funding desk / authenticated</span><h1>{account.user.name ? `${account.user.name}’s grant watch` : "Your grant watch"}</h1><p>{account.user.email}</p></div>
-        <div className="account-command-actions"><a href="/search">Run a new search <Radar size={16}/></a><button onClick={() => logout()}><LogOut size={15}/>Sign out</button></div>
+        <div className="account-command-actions"><a href={appPath("/search")}>Run a new search <Radar size={16}/></a><button onClick={() => logout()}><LogOut size={15}/>Sign out</button></div>
       </section>
 
       <section className="account-dashboard-grid">
         <article className="account-panel account-favorites-panel">
           <div className="account-panel-heading"><span><Bookmark/>01</span><div><small>Opportunity watchlist</small><h2>Favorites</h2></div><strong>{account.favoriteKeys.length}</strong></div>
-          {library?.favorites.length ? <div className="account-favorite-list">{library.favorites.map((grant) => <a href={`/opportunity/${grant.key.replace(/^opportunity:/, "")}`} key={grant.key}><span>{grant.agency}</span><h3>{grant.title}</h3><p><CalendarClock size={14}/> {formatDate(grant.closeAt)}</p><ArrowUpRight size={16}/></a>)}</div> : <div className="account-empty"><Bookmark/><strong>No favorites yet.</strong><span>Save promising opportunities from search results or a funding briefing.</span><a href="/search">Search the registry</a></div>}
+          {library?.favorites.length ? <div className="account-favorite-list">{library.favorites.map((grant) => <a href={appPath(`/opportunity/${grant.key.replace(/^opportunity:/, "")}`)} key={grant.key}><span>{grant.agency}</span><h3>{grant.title}</h3><p><CalendarClock size={14}/> {formatDate(grant.closeAt)}</p><ArrowUpRight size={16}/></a>)}</div> : <div className="account-empty"><Bookmark/><strong>No favorites yet.</strong><span>Save promising opportunities from search results or a funding briefing.</span><a href={appPath("/search")}>Search the registry</a></div>}
         </article>
 
         <article className="account-panel">

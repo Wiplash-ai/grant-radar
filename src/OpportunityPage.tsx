@@ -24,6 +24,7 @@ import {
 import { getGrant } from "./api";
 import { useAuth } from "./AuthContext";
 import RadarLoader from "./RadarLoader";
+import { appPath } from "./routes";
 import { opportunitySeo } from "./seo";
 import { SiteFooter, SiteHeader } from "./SiteChrome";
 import type { GrantDetail } from "./types";
@@ -95,7 +96,7 @@ export default function OpportunityPage({ id, onBack }: { id: string; onBack: ()
 
   function saveOpportunity() {
     if (!account) {
-      window.location.assign(`/account?return=${encodeURIComponent(window.location.pathname)}`);
+      window.location.assign(appPath(`/account?return=${encodeURIComponent(window.location.pathname)}`));
       return;
     }
     void toggleFavorite(grantKey);
@@ -106,7 +107,7 @@ export default function OpportunityPage({ id, onBack }: { id: string; onBack: ()
       <SiteHeader />
       <main className="opportunity-page">
         <div className="detail-breadcrumb">
-          <a href="/search#results" onClick={(event) => { event.preventDefault(); onBack(); }}><ArrowLeft size={14}/> All opportunities</a>
+          <a href={appPath("/search#results")} onClick={(event) => { event.preventDefault(); onBack(); }}><ArrowLeft size={14}/> All opportunities</a>
           <span>/</span><span>{grant.opportunityNumber || "Federal opportunity"}</span>
         </div>
 
@@ -183,7 +184,7 @@ export default function OpportunityPage({ id, onBack }: { id: string; onBack: ()
                 <div className="briefing-card-label"><span>Funding map</span><Building2 size={17}/></div>
                 <h3>Programs and activity</h3>
                 {details?.assistanceListings.length ? <div className="assistance-grid">{details.assistanceListings.map((listing) => <div key={listing.number}><strong>{listing.number}</strong><span>{listing.title}</span></div>)}</div> : null}
-                <div className="sidebar-tags board-tags">{(details?.fundingActivityCategories.length ? details.fundingActivityCategories : grant.themes).map((theme) => <a key={theme} href={`/search?funding_category=${encodeURIComponent(theme)}#results`} target="_blank" rel="noreferrer"><span>{theme}</span><ArrowUpRight size={12}/></a>)}</div>
+                <div className="sidebar-tags board-tags">{(details?.fundingActivityCategories.length ? details.fundingActivityCategories : grant.themes).map((theme) => <a key={theme} href={appPath(`/search?funding_category=${encodeURIComponent(theme)}#results`)} target="_blank" rel="noreferrer"><span>{theme}</span><ArrowUpRight size={12}/></a>)}</div>
                 {details?.fundingActivityCategoryExplanation ? <p className="taxonomy-note">{details.fundingActivityCategoryExplanation}</p> : null}
               </article>
             </aside>

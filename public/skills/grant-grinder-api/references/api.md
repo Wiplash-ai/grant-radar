@@ -83,6 +83,18 @@ The detail response adds:
 - official documents and additional program links when available;
 - Grants.gov source URL and verification timestamp.
 
+### `POST /v1/matches`
+
+Rank current opportunities against a reusable organization profile. The JSON body accepts `keywords`, `applicant_types`, `funding_categories`, `agencies`, `min_award`, `max_days_to_close`, and `limit` (1–50). Each result includes the normalized grant, a 0–100 `matchScore`, `matchReasons`, and `cautions`. Scores organize source data; they do not determine eligibility.
+
+### `GET /v1/changes`
+
+Read additions, material field updates, and removals observed during the daily refresh. Use `since` with an ISO timestamp, optionally filter comma-separated `type=added,updated,removed`, and follow `pagination.next_cursor`. Events are retained for 90 days.
+
+### `GET /v1/grants/{key}/checklist`
+
+Generate a source-linked readiness checklist covering the official notice, applicant eligibility, deadline, registrations, forms, budget, cost sharing, and linked source documents. Treat every item as a preparation aid and verify it against the controlling notice.
+
 ### `GET /v1/meta`
 
 Retrieve catalog counts, source coverage, daily refresh metadata, and public source health. Use this endpoint for monitoring or to report catalog freshness.

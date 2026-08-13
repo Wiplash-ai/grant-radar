@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="widget.css">
+    <title>Grant Grinder</title>
+  </head>
+  <body>
+    <header class="masthead" id="dragHandle" title="Drag Grant Grinder" tabindex="0" role="toolbar" aria-label="Drag Grant Grinder widget">
+      <div class="brand">
+        <img src="icons/radar-mark.svg" alt="">
+        <div><span>Wiplash Labs</span><strong>Grant Grinder</strong></div>
+      </div>
+      <div class="window-actions">
+        <button id="openFullApp" type="button" title="Open the full app in a new tab" aria-label="Open the full Grant Grinder app in a new tab">
+          <span>Full app</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3M14 3h7v7M10 14 21 3"/></svg>
+        </button>
+        <button id="closeWidget" type="button" title="Close widget" aria-label="Close Grant Grinder widget"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+      </div>
+    </header>
+
+    <main>
+      <section class="search-panel" aria-labelledby="searchTitle">
+        <div class="eyebrow-row">
+          <div class="eyebrow"><i></i> Live federal funding registry</div>
+          <button id="deskButton" class="desk-button" type="button" hidden>My desk <span id="deskCount">0</span></button>
+        </div>
+        <div id="contextBanner" class="context-banner" hidden><span>Similar opportunity scan</span><strong id="contextTitle"></strong><button id="clearContext" type="button">Clear</button></div>
+        <h1 id="searchTitle">Find your next opportunity.</h1>
+        <form id="searchForm">
+          <label class="query-field">
+            <span class="sr-only">Search grants</span>
+            <input id="query" type="search" autocomplete="off" placeholder="Try rural health, housing, veterans…" maxlength="200">
+            <button type="submit" aria-label="Search grants">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
+            </button>
+          </label>
+          <div class="filters">
+            <div class="custom-dropdown" data-dropdown="status">
+              <span>Status</span>
+              <button class="dropdown-trigger" type="button" aria-haspopup="listbox" aria-expanded="false"><b>All current</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
+              <div class="dropdown-menu" role="listbox" aria-label="Opportunity status" hidden>
+                <button type="button" role="option" aria-selected="true" data-value="">All current</button>
+                <button type="button" role="option" aria-selected="false" data-value="open">Open now</button>
+                <button type="button" role="option" aria-selected="false" data-value="forecasted">Forecasted</button>
+              </div>
+            </div>
+            <div class="custom-dropdown" data-dropdown="sort">
+              <span>Sort</span>
+              <button class="dropdown-trigger" type="button" aria-haspopup="listbox" aria-expanded="false"><b>Best match</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button>
+              <div class="dropdown-menu" role="listbox" aria-label="Sort opportunities" hidden>
+                <button type="button" role="option" aria-selected="true" data-value="relevance-desc">Best match</button>
+                <button type="button" role="option" aria-selected="false" data-value="close-date-asc">Deadline soonest</button>
+                <button type="button" role="option" aria-selected="false" data-value="posted-date-desc">Newest posted</button>
+                <button type="button" role="option" aria-selected="false" data-value="award-max-desc">Largest award</button>
+              </div>
+            </div>
+          </div>
+        </form>
+        <div class="quick-searches" aria-label="Quick searches">
+          <button data-query="Small business">Small business</button>
+          <button data-query="Education">Education</button>
+          <button data-query="Housing">Housing</button>
+          <button data-query="Agriculture">Agriculture</button>
+        </div>
+      </section>
+
+      <section class="registry" aria-live="polite" aria-busy="true">
+        <div class="registry-head"><span id="resultLabel">Scanning registry</span><span id="resultCount">—</span></div>
+        <div id="loading" class="loading">
+          <div class="radar" aria-hidden="true"><i></i><b></b><b></b></div>
+          <p>Looking for funding targets…</p>
+        </div>
+        <div id="error" class="message" hidden><strong>Registry link interrupted.</strong><span id="errorMessage">Try the search again.</span><button id="retry" type="button">Retry search</button></div>
+        <div id="empty" class="message" hidden><strong>No matching targets.</strong><span>Try a broader phrase or include forecasted opportunities.</span></div>
+        <div id="results" class="results"></div>
+        <div id="deskPanel" class="desk-panel" hidden></div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Official sources · Refreshed daily</span>
+      <a href="https://wiplash.ai" target="_blank" rel="noreferrer">Produced by Wiplash.ai</a>
+    </footer>
+    <script src="widget.js"></script>
+  </body>
+</html>

@@ -1,4 +1,5 @@
 import type { SearchCriteria } from "./types";
+import { appPath } from "./routes";
 
 export function searchCriteriaUrl(criteria: SearchCriteria) {
   const params = new URLSearchParams();
@@ -13,7 +14,7 @@ export function searchCriteriaUrl(criteria: SearchCriteria) {
   if (criteria.hasFundingAmount) params.set("has_funding_amount", "true");
   const defaultSort = criteria.q ? "relevance-desc" : "posted-date-desc";
   if (criteria.sort && criteria.sort !== defaultSort) params.set("sort", criteria.sort);
-  return `/search${params.size ? `?${params}` : ""}#results`;
+  return appPath(`/search${params.size ? `?${params}` : ""}#results`);
 }
 
 export function criteriaSummary(criteria: SearchCriteria) {
