@@ -1,6 +1,11 @@
-const defaults = { apiUrl: "https://api.grants.wiplash.ai", apiKey: "" };
+const defaults = { appUrl: "https://labs.wiplash.ai/grants/search" };
 const form = document.getElementById("optionsForm");
-const apiUrl = document.getElementById("apiUrl");
-const apiKey = document.getElementById("apiKey");
-chrome.storage.sync.get(defaults).then((settings) => { apiUrl.value = settings.apiUrl; apiKey.value = settings.apiKey; });
-form.addEventListener("submit", async (event) => { event.preventDefault(); await chrome.storage.sync.set({ apiUrl: apiUrl.value.replace(/\/$/, ""), apiKey: apiKey.value.trim() }); const saved = document.getElementById("saved"); saved.textContent = "Saved"; setTimeout(() => saved.textContent = "", 1500); });
+const appUrl = document.getElementById("appUrl");
+chrome.storage.sync.get(defaults).then((settings) => { appUrl.value = settings.appUrl; });
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  await chrome.storage.sync.set({ appUrl: appUrl.value.replace(/\/$/, "") });
+  const saved = document.getElementById("saved");
+  saved.textContent = "Web app saved";
+  setTimeout(() => saved.textContent = "", 1800);
+});

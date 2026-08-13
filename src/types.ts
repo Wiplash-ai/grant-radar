@@ -15,9 +15,101 @@ export type Grant = {
   fitScore: number;
   fitReasons: string[];
   summary: string;
+  descriptionExcerpt?: string;
+  eligibleApplicants: string[];
+  fundingActivityCategories: string[];
+  fundingInstrumentTypes: string[];
+  assistanceListingNumbers: string[];
+  programFundingUsd?: number;
+  lastVerifiedAt?: string;
+};
+
+export type GrantFacetItem = { value: string; count: number };
+export type GrantContactPhone = {
+  raw: string;
+  display: string;
+  telUrl: string;
+  whatsappUrl?: string;
+};
+export type GrantSearchFacets = {
+  statuses: GrantFacetItem[];
+  agencies: GrantFacetItem[];
+  fundingCategories: GrantFacetItem[];
+  fundingInstruments: GrantFacetItem[];
+  eligibleApplicants: GrantFacetItem[];
+};
+
+export type GrantOpportunityDetails = {
+  description?: string;
+  descriptionMarkdown?: string;
+  eligibleApplicants: string[];
+  eligibilityHighlights?: string[];
+  eligibilityAdditionalInformation?: string;
+  grantorContactDescription?: string;
+  grantorContactEmail?: string;
+  grantorContactPhones?: GrantContactPhone[];
+  assistanceListings: Array<{ number: string; title: string }>;
+  lastUpdatedLabel?: string;
+  programFundingUsd?: number;
+  programFundingLabel?: string;
+  costSharingOrMatchingRequirement?: string;
+  fundingInstrumentTypes: string[];
+  opportunityCategory?: string;
+  opportunityCategoryExplanation?: string;
+  fundingActivityCategories: string[];
+  fundingActivityCategoryExplanation?: string;
+  version?: string;
+  archiveDateLabel?: string;
+  archiveAt?: string;
+  grantsGovUrl?: string;
+  applicationInstructions?: string;
+  documents: Array<{ name: string; url: string }>;
+  additionalInformation: Array<{ name: string; url: string }>;
+  fetchedAt: string;
+};
+
+export type GrantDetail = Grant & {
+  statusLabel?: string;
+  postedAt?: string;
+  postedDateLabel?: string;
+  awardFloorUsd?: number;
+  awardFloorLabel?: string;
+  expectedAwards?: number;
+  expectedAwardsLabel?: string;
+  officialUrlLabel?: string;
+  detailUrl?: string;
+  matchedQueries?: string[];
+  fitBand?: "high" | "medium" | "low";
+  fitReasons?: string[];
+  details?: GrantOpportunityDetails;
 };
 export type GrantResponse = {
   data: Grant[];
   pagination: { total: number; page: number; limit: number; pages: number };
-  meta: { generated_at: string; last_refresh_at?: string };
+  meta: { generated_at: string; last_refresh_at?: string; facets: GrantSearchFacets };
 };
+
+export type GrantDetailResponse = { data: GrantDetail; meta: { generated_at: string } };
+
+export type SearchCriteria = {
+  q?: string;
+  status?: string;
+  agency?: string;
+  fundingCategory?: string;
+  fundingInstrument?: string;
+  eligibleApplicant?: string;
+  minAward?: string;
+  deadlineDays?: string;
+  hasFundingAmount?: boolean;
+  sort?: string;
+};
+
+export type SavedSearch = { id: string; name: string; criteria: SearchCriteria; createdAt: string; updatedAt: string };
+export type SearchHistoryEntry = { id: string; label: string; criteria: SearchCriteria; searchedAt: string };
+export type AccountSnapshot = {
+  user: { id: string; email: string; name?: string; createdAt: string };
+  favoriteKeys: string[];
+  savedSearches: SavedSearch[];
+  searchHistory: SearchHistoryEntry[];
+};
+export type AccountLibrary = AccountSnapshot & { favorites: Grant[] };

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Grant Grinder API"
+  short_description: "Search complete federal grant opportunities"
+  default_prompt: "Use $grant-grinder-api to find current federal grants for a rural health nonprofit and return official source links."

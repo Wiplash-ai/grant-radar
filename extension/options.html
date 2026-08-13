@@ -1,1 +1,22 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="popup.css"><title>Grant Radar settings</title></head><body style="width:min(680px,100vw);margin:40px auto"><main><h1 style="font:500 42px Newsreader,serif">API settings</h1><p>Grant Radar searches through the Wiplash Government Grants API. Your API key stays in browser sync storage.</p><form id="optionsForm"><label><span>API URL</span><div><input id="apiUrl" type="url" required></div></label><label style="display:block;margin-top:14px"><span>API key</span><div><input id="apiKey" type="password" autocomplete="off" placeholder="Optional for public access"></div></label><button style="margin-top:14px">Save settings</button><span id="saved" style="margin-left:12px"></span></form></main><script src="options.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="options.css">
+    <title>Grant Grinder extension settings</title>
+  </head>
+  <body>
+    <div class="utility">Wiplash Labs / Extension Configuration <span><i></i> Field widget ready</span></div>
+    <main>
+      <header><img src="icons/icon-48.png" alt=""><span>Grant Grinder / Systems</span><h1>Keep funding intelligence beside your work.</h1><p>The toolbar button toggles a fixed-size Grant Grinder widget on the page you are using. Drag it by its header, close it when you need the space, or open the complete app in a new tab.</p></header>
+      <form id="optionsForm">
+        <label><span>Grant Grinder web app URL</span><input id="appUrl" type="url" required></label>
+        <p>This controls where full searches and funding briefings open. Keep the official URL for normal use. Developers can use <code>http://localhost:5173/search</code>.</p>
+        <button>Save web app</button><span id="saved" role="status"></span>
+      </form>
+      <section><strong>Privacy boundary</strong><p>The extension injects only its isolated widget after you click the toolbar button. It sends submitted searches to Grant Grinder's public endpoint and, on Grant Grinder pages, can receive your favorites and saved searches from the existing first-party session. It never receives the session cookie, reads unrelated page content, or stores an API key.</p></section>
+    </main>
+    <script src="options.js"></script>
+  </body>
+</html>
