@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="public/radar-mark.svg" alt="Grant Grinder radar logo" width="132">
+</p>
+
 # Grant Grinder
 
 Public web app and Manifest V3 browser extension for searching source-attributed U.S. government grant opportunities through the private Grant Grinder API.
