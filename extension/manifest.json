@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "Grant Grinder",
-  "version": "0.5.1",
-  "description": "Keep a draggable federal-grant search widget beside the work already in your browser.",
+  "name": "Federal Grant Finder - Grant Grinder",
+  "short_name": "GrantGrind",
+  "version": "0.5.2",
+  "description": "Search current U.S. federal grants in a movable browser widget, filter opportunities, and open official-source funding details.",
   "homepage_url": "https://labs.wiplash.ai/grants",
   "permissions": ["storage", "contextMenus", "activeTab", "scripting"],
   "host_permissions": ["https://labs.wiplash.ai/grants/*"],

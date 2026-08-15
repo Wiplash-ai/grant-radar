@@ -1,11 +1,14 @@
-# Grant Grinder browser-store listing draft
+# Grant Grinder browser-store listing
 
-Status: prepare and save drafts only. Do not submit for review or publish until the Wiplash ad/demo video is approved.
+Release note: version 0.5.2 and the listing copy below were used for the
+August 15, 2026 browser-store submissions. Re-check each live dashboard before
+making future listing or publication changes.
 
 ## Product identity
 
-- Name: `Grant Grinder`
-- Version: `0.5.1`
+- Name: `Federal Grant Finder - Grant Grinder`
+- Short name: `GrantGrind`
+- Version: `0.5.2`
 - Language: `English (United States)`
 - Chrome category: `Tools`
 - Microsoft Edge category: `Productivity`
@@ -21,7 +24,17 @@ Status: prepare and save drafts only. Do not submit for review or publish until 
 
 ## Short description
 
-Keep a draggable federal-grant search widget beside the work already in your browser.
+Search current U.S. federal grants in a movable browser widget, filter opportunities, and open official-source funding details.
+
+## Search terms
+
+- `federal grant finder`
+- `government grant search`
+- `grant opportunities`
+- `funding opportunities`
+- `grant discovery`
+- `Grants.gov search`
+- `grant research`
 
 ## Full description
 
@@ -110,36 +123,38 @@ No technical or interaction telemetry is collected. Firefox uses `grant-grinder@
 
 The public search, result summaries, and opportunity briefings require no account, reviewer credential, paid subscription, or customer API key.
 
-## Store-specific draft notes
+## Store-specific release notes
 
 ### Chrome Web Store
 
-- Upload `artifacts/packages/grant-grinder-chrome-v0.5.1.zip`.
+- Upload `artifacts/packages/grant-grinder-chrome-v0.5.2.zip`.
 - Use `icon128.png`, at least one 1280 x 800 screenshot, and `promo-small-440x280.png`.
-- Complete Store listing, Privacy practices, and Distribution, then leave the item in Draft.
-- Do not click `Submit for review` or any publish action.
+- Complete Store listing, Privacy practices, and Distribution, then submit for
+  review only after fresh release authorization.
 - Use `https://www.youtube.com/watch?v=LhmkM0y8-R8` as the global promotional video.
 
 ### Microsoft Edge Add-ons
 
-- Upload `artifacts/packages/grant-grinder-edge-v0.5.1.zip`.
+- Upload `artifacts/packages/grant-grinder-edge-v0.5.2.zip`.
 - Complete Package, Properties, Privacy, and the English (United States) Store listing.
-- Save the submission in `In draft`; do not click `Publish`.
+- Publish the completed submission only after fresh release authorization.
 - Use `https://www.youtube.com/watch?v=LhmkM0y8-R8` as the YouTube video URL.
 
 ### Firefox Add-ons
 
-- Use `artifacts/packages/grant-grinder-firefox-v0.5.1.xpi`.
+- Use `artifacts/packages/grant-grinder-firefox-v0.5.2.xpi`.
 - The packaged source is readable, unminified JavaScript with no bundler output, so a separate source-code upload is not required.
-- AMO accepted the upload as the resumable `grant-grinder` draft and validated it with no errors and one desktop-only compatibility warning.
-- The draft's final details form has no save action before `Submit Version`, so keep the listing copy in this file and stop before that button. Do not submit the version merely to persist the product-page fields.
-- AMO does not expose a video field in the initial version flow. Add `https://www.youtube.com/watch?v=LhmkM0y8-R8` to the product-page media or description after the owner authorizes `Submit Version`.
+- AMO validates the Firefox package before the release-notes and reviewer-notes
+  steps. Submit the completed version only after fresh release authorization.
+- AMO does not expose a video field in the initial version flow. Keep the demo
+  URL in the product-page description when a separate video field is absent.
 
 ### Opera Add-ons
 
-- Upload `artifacts/packages/grant-grinder-opera-v0.5.1.zip`.
+- Upload `artifacts/packages/grant-grinder-opera-v0.5.2.zip`.
 - Opera requires the exact 64 x 64 `icon64.png`; use the three 1280 x 800 screenshots and `promo-opera-300x188.png` for the remaining media.
-- Complete General, Translations, Media, and Promotional Image, then stop before `Submit changes`.
+- Complete General, Translations, Media, and Promotional Image, then submit the
+  completed version only after fresh release authorization.
 - Use `https://www.youtube.com/watch?v=LhmkM0y8-R8` as the extension video URL.
 
 ## Prepared asset inventory
@@ -157,7 +172,7 @@ The public search, result summaries, and opportunity briefings require no accoun
 
 ## Release gate
 
-- Complete: approved Wiplash ad/demo video published at `https://www.youtube.com/watch?v=LhmkM0y8-R8`.
-- Pending: deploy the updated extension section of the privacy policy before any store submission.
-- Pending: owner review of every saved dashboard draft.
-- Explicitly prohibited in this preparation pass: submit for review, publish, or release to testers.
+- Confirm the demo and public privacy policy are live.
+- Re-run the package verification commands and inspect the generated archives.
+- Re-check every store dashboard and obtain fresh authorization before a new
+  submission, publication, or listing edit.
