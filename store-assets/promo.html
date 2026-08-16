@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <style>
+      :root {
+        --ink: #07100d;
+        --deep: #0e3b31;
+        --lime: #d9ff68;
+        --cream: #f8f5e9;
+        --muted: #c6d0c3;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        padding: 20px;
+        display: grid;
+        gap: 20px;
+        background: #ddd;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      .promo {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        color: var(--cream);
+        background-color: var(--ink);
+        background-position: center;
+        background-size: cover;
+      }
+
+      .promo::before {
+        content: "";
+        position: absolute;
+        z-index: 0;
+        inset: 0;
+        background: linear-gradient(90deg, rgba(5, 14, 11, 1) 0%, rgba(5, 14, 11, 0.98) 28%, rgba(5, 14, 11, 0.68) 48%, rgba(5, 14, 11, 0.08) 80%);
+      }
+
+      .promo::after {
+        content: "";
+        position: absolute;
+        z-index: 5;
+        inset: 0;
+        pointer-events: none;
+        border: 1px solid rgba(217, 255, 104, 0.16);
+        background: radial-gradient(circle at 82% 82%, rgba(217, 255, 104, 0.1), transparent 28%);
+      }
+
+      .small {
+        width: 440px;
+        height: 280px;
+        background-image: url("source/promo-small-base.png");
+      }
+
+      .marquee {
+        width: 1400px;
+        height: 560px;
+        background-image: url("source/promo-marquee-base.png");
+      }
+
+      .lockup,
+      .headline,
+      .promise,
+      .features {
+        position: absolute;
+        z-index: 2;
+      }
+
+      .lockup {
+        display: flex;
+        align-items: center;
+      }
+
+      .lockup img {
+        display: block;
+        box-shadow: 0 18px 42px rgba(0, 0, 0, 0.35), 0 0 28px rgba(217, 255, 104, 0.08);
+      }
+
+      .brand-copy { margin-left: 14px; }
+
+      .eyebrow {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--lime);
+        font-size: 9px;
+        font-weight: 850;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+      }
+
+      .brand-copy strong {
+        display: block;
+        color: var(--cream);
+        font-size: 27px;
+        line-height: 1;
+        letter-spacing: -0.04em;
+      }
+
+      .headline {
+        margin: 0;
+        max-width: 52%;
+        color: var(--cream);
+        font-size: 35px;
+        line-height: 0.98;
+        letter-spacing: -0.05em;
+      }
+
+      .headline em { color: var(--lime); font-style: normal; }
+
+      .promise {
+        margin: 0;
+        max-width: 50%;
+        color: var(--muted);
+        font-weight: 650;
+      }
+
+      .features {
+        display: flex;
+        gap: 10px;
+      }
+
+      .features span {
+        padding: 9px 12px;
+        border: 1px solid rgba(217, 255, 104, 0.24);
+        border-radius: 999px;
+        color: var(--lime);
+        background: rgba(7, 16, 13, 0.7);
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        backdrop-filter: blur(8px);
+      }
+
+      .small::before { background: linear-gradient(90deg, rgba(5, 14, 11, 1) 0%, rgba(5, 14, 11, 0.98) 43%, rgba(5, 14, 11, 0.5) 66%, rgba(5, 14, 11, 0.04) 100%); }
+      .small .lockup { left: 22px; top: 20px; }
+      .small .lockup img { width: 48px; height: 48px; border-radius: 14px; }
+      .small .headline { left: 22px; top: 96px; }
+      .small .promise { left: 23px; bottom: 25px; max-width: 205px; font-size: 11px; line-height: 1.4; }
+      .small .features { display: none; }
+
+      .marquee .lockup { left: 72px; top: 58px; }
+      .marquee .lockup img { width: 78px; height: 78px; border-radius: 22px; }
+      .marquee .brand-copy { margin-left: 20px; }
+      .marquee .eyebrow { margin-bottom: 7px; font-size: 12px; }
+      .marquee .brand-copy strong { font-size: 44px; }
+      .marquee .headline { left: 72px; top: 190px; max-width: 575px; font-size: 67px; line-height: 0.94; }
+      .marquee .promise { left: 76px; top: 350px; max-width: 470px; font-size: 19px; line-height: 1.45; }
+      .marquee .features { left: 76px; bottom: 58px; }
+    </style>
+  </head>
+  <body>
+    <section class="promo small">
+      <div class="lockup">
+        <img src="../extension/icons/icon-128.png" alt="">
+        <div class="brand-copy"><span class="eyebrow">Federal grant finder</span><strong>Grant Grinder</strong></div>
+      </div>
+      <h1 class="headline">Find grants<br>that <em>fit.</em></h1>
+      <p class="promise">Search federal opportunities without leaving the page.</p>
+    </section>
+
+    <section class="promo marquee">
+      <div class="lockup">
+        <img src="../extension/icons/icon-128.png" alt="">
+        <div class="brand-copy"><span class="eyebrow">Federal grant finder</span><strong>Grant Grinder</strong></div>
+      </div>
+      <h1 class="headline">Find the right<br><em>federal grants.</em></h1>
+      <p class="promise">Search, compare, and save relevant funding opportunities from a focused browser companion.</p>
+      <div class="features"><span>Search</span><span>Compare</span><span>Save</span></div>
+    </section>
+  </body>
+</html>
