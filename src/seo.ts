@@ -117,7 +117,7 @@ export function opportunitySeo(grant: GrantDetail) {
   const description = (grant.descriptionExcerpt || grant.details?.description || grant.summary).replace(/\s+/g, " ").slice(0, 300);
   const amount = grant.programFundingUsd || grant.details?.programFundingUsd || grant.awardCeilingUsd;
   setSeo({
-    title: `${grant.title} — Federal grant briefing | Grant Grinder`,
+    title: `${grant.title}${grant.opportunityNumber ? ` (${grant.opportunityNumber})` : ""} — Federal grant briefing | Grant Grinder`,
     description,
     path: `/opportunity/${encodeURIComponent(grant.key.replace(/^opportunity:/, ""))}`,
     type: "article",

@@ -34,7 +34,7 @@ for (const grant of catalog.grants) {
   const id = grant.key.replace(/^opportunity:/, "");
   const route = `/opportunity/${encodeURIComponent(id)}`;
   const url = `${siteBase}${route}`;
-  const title = `${grant.title} — Federal grant briefing | Grant Grinder`;
+  const title = `${grant.title}${grant.opportunityNumber ? ` (${grant.opportunityNumber})` : ""} — Federal grant briefing | Grant Grinder`;
   const description = grant.description || `${grant.agency} federal funding opportunity.`;
   const structuredData = {
     "@context": "https://schema.org",
